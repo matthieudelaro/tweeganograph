@@ -4,7 +4,7 @@
 
 
 class Tweet:
-    """Holds data about a tweet. It can used to get tweets from Tweeter,
+    """Holds data about a tweet. It can be used to get tweets from Tweeter,
     to store them in some kind of database (serialization of the list of
     tweets ?), to get the features of the tweet to generate the text, ..."""
 

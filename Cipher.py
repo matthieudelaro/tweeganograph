@@ -19,8 +19,10 @@ class Cipher:
         listOfTweets = self._selectTweetsListForEncoding(preprocessedPlainText,
                                                          tweetsDatabase)
 
-        # todo Matthieu : render tweets as text
-        return "list of tweets hidding the message"
+        output = ""
+        for tweet in listOfTweets:
+            output += "%s\n%s\n\n" % (tweet.content, tweet.getUrl())
+        return output
 
     def decode(self, cipherText, key):
         """Decodes a string containing a list of tweets. Returns the decoded
@@ -31,13 +33,16 @@ class Cipher:
         return plainText
 
     def _preprocessPlainText(self, plainText, key):
-        """Applies compression algorithm, encode with AES, ...
-        The process must be reversible with
-        __reversePlainTextPreprocessing(plainText, key)"""
+        """Applies compression algorithm, encode with AES, ... and returns
+        bytes. The process must be reversible with
+        __reversePlainTextPreprocessing(plainText, key)."""
+        # examples about bytes and bytearray: http://www.dotnetperls.com/bytes
+        # some crypto module that seems nice: https://pypi.python.org/pypi/pycrypto
         return plainText  # todo Juyasohn
 
     def _reversePlainTextPreprocessing(self, preprocessedPlainText, key):
-        """Reverses the process of _preprocessPlainText(plainText, key)"""
+        """Reverses the process of _preprocessPlainText(plainText, key) by
+        returning a string from the given bytes preprocessedPlainText."""
         return preprocessedPlainText  # todo Juyasohn
 
     def _selectTweetsListForEncoding(self, preprocessedPlainText, key,
@@ -45,7 +50,19 @@ class Cipher:
         """Select and returns a list of tweets that encode the given
         preprocessedPlainText. It selects Tweets among those provided
         by the given tweetsDatabase."""
-        return []  # todo Matthieu
+        db = tweetsDatabase
+        dim = db.getDimensionOfFeatureVector()
+        # ppt = BitOver(preprocessedPlainText)
+        # output = []
+        # for it in range(start=0, stop=len(ppt), step=dim):
+        #     tweet = db.getTweetWithFeatureVector(ppt[it:it+dim])
+        #     if tweet:
+        #         output += tweet
+        #     else:
+        #         print("Could not find proper tweet!!!")
+        #         return None
+        # return output
+        return None  # todo Matthieu
 
     def _parseTextAsListOfTweets(self, text):
         """Parses given text and returns a list of Tweet instances."""
