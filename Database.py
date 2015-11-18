@@ -4,6 +4,7 @@
 
 import unittest
 from Tweet import Tweet
+import tweepy
 
 
 class AbstractDatabase:
