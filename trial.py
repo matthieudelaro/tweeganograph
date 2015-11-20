@@ -1,4 +1,6 @@
 import tweepy
+import csv
+
 consumer_key = 'wsjOTj954n9aLO7KKrKVvX0ah'
 consumer_secret = 'Dk4JzqEQDhfiKpUMmlOjDQvIXX4hpHBDaf2GwLmxZWWHPVklcg'
 access_token = '3475513752-OcILSytFVDPoYOK0sXaaFQPxob5VqpCkeXPxLCw'
@@ -19,5 +21,73 @@ for tweet in mytimeline:
     print (tweet.id, tweet.text)
 print ('--------------------------')
 
-srch = api.search('sony')
-print (srch)
+#print (tweet.mentions)
+srch = api.get_status(667523538945863681)
+print (srch.entities)
+
+#srch =tweepy.Cursor( api.search,q ='#xbox', lang = 'en').items(2500)
+
+#csvFile = open('xbox.csv', 'a')
+##Use csv Writer
+#csvWriter = csv.writer(csvFile)
+#x = 0
+#for i in srch:
+    #s = i.text
+    #n = i.user.name
+    #csvWriter.writerow(['**'+str(i.id),n.encode('utf-8'),s.encode('utf-8'),s.count('@'),s.count('#'),len(s)])
+    #x+=1
+    
+#srch =tweepy.Cursor( api.search,q ='#iPhone', lang = 'en').items(180)
+#for i in srch:
+    #s = i.text
+    #n = i.user.name
+    #csvWriter.writerow(['**'+str(i.id),n.encode('utf-8'),s.encode('utf-8'),s.count('@'),s.count('#'),len(s)])
+    #x+=1
+
+#srch =tweepy.Cursor( api.search,q ='#Xperia', lang = 'en').items(180)
+#for i in srch:
+    #s = i.text
+    #n = i.user.name
+    #csvWriter.writerow(['**'+str(i.id),n.encode('utf-8'),s.encode('utf-8'),s.count('@'),s.count('#'),len(s)])
+    #x+=1
+
+#srch =tweepy.Cursor( api.search,q ='#Windows Surface', lang = 'en').items(180)
+#for i in srch:
+    #s = i.text
+    #n = i.user.name
+    #csvWriter.writerow(['**'+str(i.id),n.encode('utf-8'),s.encode('utf-8'),s.count('@'),s.count('#'),len(s)])
+    #x+=1
+
+#srch =tweepy.Cursor( api.search,q ='#Nvidia', lang = 'en').items(180)
+#for i in srch:
+    #s = i.text
+    #n = i.user.name
+    #csvWriter.writerow(['**'+str(i.id),n.encode('utf-8'),s.encode('utf-8'),s.count('@'),s.count('#'),len(s)])
+    #x+=1
+    
+#srch =tweepy.Cursor( api.search,q ='#Samsung', lang = 'en').items(100)
+#for i in srch:
+    #s = i.text
+    #n = i.user.name
+    #csvWriter.writerow(['**'+str(i.id),n.encode('utf-8'),s.encode('utf-8'),s.count('@'),s.count('#'),len(s)])
+    #x+=1
+#srch =tweepy.Cursor( api.search,q ='#Sony', lang = 'en').items(100)
+#for i in srch:
+    #s = i.text
+    #n = i.user.name
+    #csvWriter.writerow(['**'+str(i.id),n.encode('utf-8'),s.encode('utf-8'),s.count('@'),s.count('#'),len(s)])
+    #x+=1
+    
+#csvFile.close()
+#print (x)
+
+#srch =tweepy.Cursor( api.search,q ='#iPhone', lang = 'en').items(180)
+#
+#print(srch)
+#
+#x =0
+#
+#for s in srch:
+#    x+=1
+#    print(s.text)
+#print(x)
