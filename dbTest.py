@@ -1,5 +1,6 @@
 import csv
 import random
+from Tweet import Tweet
 
 class TweetDatabase:
     def loadTweets():
@@ -17,7 +18,7 @@ class TweetDatabase:
         features = []
         for f in range(16):
             features.append([])
-        print(features)
+        #print(features)
         
         csvFile = open('xboxData.csv')
         reader = csv.reader(csvFile)
@@ -39,7 +40,9 @@ class TweetDatabase:
             
             index = feat1 + 2*feat2+4*feat3+8*feat4
             
-            features[index].append(row)
+            #features[index].append(row)
+            tw =Tweet(row[1],row[0],row[2])
+            features[index].append(tw)
             x+=1
             #print(x)
             #print (row,feat4,feat3,feat2,feat1)
@@ -63,8 +66,8 @@ class TweetDatabase:
         index = feat1 + 2*feat2+4*feat3+8*feat4
         out = features[index]
         index = int(random.random()*len(out))
-        print()
-        print (index)
+        #print()
+        #print (index)
         return out[index]
 
     def getDimensionOfFeatureVector(self):
@@ -81,7 +84,7 @@ class TweetDatabase:
         pass
     
 ##Testing statements
-#out = AbstractDatabase.loadTweets()
+#out = TweetDatabase.loadTweets()
 #print()
 #print(len(out))
-#print(AbstractDatabase.getTweetWithFeatureVector(1,1,0,1,out))
+#print(TweetDatabase.getTweetWithFeatureVector(1,1,0,1,out))
