@@ -40,6 +40,13 @@ class MockDatabase(AbstractDatabase):
 
         for featureVector in range(len(self._tweets)):
             self._tweets[featureVector] = [Tweet("pseudo%s_%s" % (featureVector, x), "id%s_%s" % (featureVector, x), "Hello content %s_%s" % (featureVector, x)) for x in range(MockDatabase.defaultQuantityOfTweetsPerFeatureVector)]
+
+            # featureVectorByteArray = bytearray(Math.ceil(self._dimensionOfFeatureVector / 8))
+            # featureVectorBitOver = BitOver(featureVectorByteArray)
+            # featureVectorBitOver.writeInt(0, featureVector)
+            for tweet in self._tweets[featureVector]:
+                # tweet._featureVector = featureVectorBitOver
+                tweet._featureVector = featureVector
         self.resetTweetUsageCounters()
 
     def resetTweetUsageCounters(self):

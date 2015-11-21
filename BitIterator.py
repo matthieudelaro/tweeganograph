@@ -30,7 +30,7 @@ class Bit:
         # print(data)
         # print(iterator)
         # print("END Data / iterator")
-        byte = iterator / 8
+        byte = int(iterator / 8)
         offset = 7 - (iterator % 8)
         mask = 1 << offset
         if data[byte] & mask:
@@ -41,7 +41,7 @@ class Bit:
     @staticmethod
     def set(data, iterator, value):
         """Sets the value of the bit pointed by the iterator in data."""
-        byte = iterator / 8
+        byte = int(iterator / 8)
         offset = 7 - (iterator % 8)
         if value:
             mask = 1 << offset
@@ -91,7 +91,7 @@ class BitOver:
     def __getitem__(self, key):
         if isinstance(key, slice):
             #Get the start, stop, and step from the slice
-            return [self[ii] for ii in xrange(*key.indices(len(self)))]
+            return [self[ii] for ii in range(*key.indices(len(self)))]
         elif isinstance(key, int):
             if key < 0:  # Handle negative indices
                 key += len(self)
@@ -101,7 +101,23 @@ class BitOver:
         else:
             raise TypeError("Invalid argument type.")
 
+    def __setitem__(self, key, value: int):
+        """Given value must be an integer."""
+        if isinstance(key, slice):
+            #Get the start, stop, and step from the slice
+            self.writeInt(key.start, value, key.stop - key.start)
+        elif isinstance(key, int):
+            if key < 0:  # Handle negative indices
+                key += len(self)
+            if key >= len(self):
+                raise IndexError("The index (%d) is out of range." % key)
+            return Bit.set(self._data, key, value)  # set the data elsewhere
+        else:
+            raise TypeError("Invalid argument type.")
+
     def getAsInt(self, key):
+        """Returns an integer corresponding to the value of
+        the bits pointed by the given slice key."""
         bitsList = self.__getitem__(key)
         power = len(bitsList) - 1
         output = 0
@@ -110,6 +126,18 @@ class BitOver:
                 output += 2 ** power
             power -= 1
         return output
+
+    def writeInt(self, iterator, value: int, dimension: int):
+        """Write the bits of given integer value at the given position
+        iterator. The quantity of bits written is given by dimension
+        parameter."""
+        for power in range(dimension):
+            v = 2**(power + 1)
+            if value % v:
+                self.set(iterator + dimension - power - 1, 1)
+                value -= 2**power
+            else:
+                self.set(iterator + dimension - power - 1, 0)
 
 
 class TestBitMethods(unittest.TestCase):
@@ -146,11 +174,6 @@ class TestBitMethods(unittest.TestCase):
     def test_equal(self):
         elements2 = [17]
         values2 = bytearray(elements2)
-        # for i in range(len(self.values)):
-        #     str = ""
-        #     for j in range(8):
-        #         str += repr(Bit.get(self.values, i*8+j))
-        #     print(str)
         self.assertFalse(Bit.equal(self.values, 40, values2, 0, 8))
         self.assertFalse(Bit.equal(self.values, 47, values2, 7, 1))
 
@@ -219,6 +242,36 @@ class TestBitOverMethods(unittest.TestCase):
             self.assertTrue(self.bElements.get(counter))
             self.bElements.set(counter, False)
             self.assertFalse(self.bElements.get(counter))
+
+    def test_writeInt1(self):
+        self.bValues.writeInt(0, 16 + 7, 8)
+        self.assertListEqual(self.bValues[0:8], [0, 0, 0, 1,      0, 1, 1, 1])
+
+    def test_writeInt2(self):
+        self.bValues.writeInt(0, 4, 4)
+        self.bValues.writeInt(4, 8, 4)
+        self.assertListEqual(self.bValues[0:8], [0, 1, 0, 0,      1, 0, 0, 0])
+
+    def test_writeIntOverflow(self):
+        self.bValues.writeInt(0, 127, 4)
+        self.assertListEqual(self.bValues[0:4], [1, 1, 1, 1])
+        self.bValues.writeInt(0, 32 + 16 + 8, 4)
+        self.assertListEqual(self.bValues[0:4], [1, 0, 0, 0])
+
+    def test_setitem1(self):
+        self.bValues[0:8] = 16 + 7
+        self.assertListEqual(self.bValues[0:8], [0, 0, 0, 1,      0, 1, 1, 1])
+
+    def test_setitem2(self):
+        self.bValues[0:4] = 4
+        self.bValues[4:8] = 8
+        self.assertListEqual(self.bValues[0:8], [0, 1, 0, 0,      1, 0, 0, 0])
+
+    def test_setitemOverflow(self):
+        self.bValues[0:4] = 127
+        self.assertListEqual(self.bValues[0:4], [1, 1, 1, 1])
+        self.bValues[0:4] = 32 + 16 + 8
+        self.assertListEqual(self.bValues[0:4], [1, 0, 0, 0])
 
 
 if __name__ == '__main__':

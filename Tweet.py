@@ -65,6 +65,9 @@ class Tweet:
         #todo
         pass
 
+    def getFeatureVector(self):
+        return self._featureVector
+
 
 def tests():
     print("Testing Tweet")

@@ -2,9 +2,11 @@
 # It has been designed for Python 3.X. Please upgrade if you
 # are using Python 2.X version.
 
+import unittest
+import math
 import Tweet
-from Database import *
-from BitIterator import *
+from Database import MockDatabase
+from BitIterator import BitOver
 
 
 class Cipher:
@@ -17,7 +19,7 @@ class Cipher:
         which is returned. Given tweetDatabase contains all the Tweets that
         the cipher can use to encode the given plainText."""
         preprocessedPlainText = self._preprocessPlainText(plainText, key)
-        listOfTweets = self._selectTweetsListForEncoding(preprocessedPlainText,
+        listOfTweets, listOfBitsPerTweet = self._selectTweetsListForEncoding(preprocessedPlainText,
                                                          tweetsDatabase)
 
         output = ""
@@ -28,8 +30,8 @@ class Cipher:
     def decode(self, cipherText, key):
         """Decodes a string containing a list of tweets. Returns the decoded
         message."""
-        listOfTweets = self._parseTextAsListOfTweets(cipherText, key)
-        preprocessedPlainText = self._recoverDataFromTweetsList(listOfTweets, key)
+        listOfTweets, listOfBitsPerTweet = self._parseTextAsListOfTweets(cipherText, key)
+        preprocessedPlainText = self._recoverDataFromTweetsList(listOfTweets, listOfBitsPerTweet)
         plainText = self._reversePlainTextPreprocessing(preprocessedPlainText, key)
         return plainText
 
@@ -39,19 +41,20 @@ class Cipher:
         __reversePlainTextPreprocessing(plainText, key)."""
         # examples about bytes and bytearray: http://www.dotnetperls.com/bytes
         # some crypto module that seems nice: https://pypi.python.org/pypi/pycrypto
-        return bytearray(plainText)  # todo Juyasohn.
+        return bytearray(plainText, 'UTF-8')  # todo Juyasohn.
         # warning : take care of encoding issues (UTF-8, Latin1, ...)
 
     def _reversePlainTextPreprocessing(self, preprocessedPlainText, key):
         """Reverses the process of _preprocessPlainText(plainText, key) by
         returning a string from the given bytes preprocessedPlainText."""
-        return preprocessedPlainText  # todo Juyasohn
+        return preprocessedPlainText.decode("UTF-8")  # todo Juyasohn
         # warning : take care of encoding issues (UTF-8, Latin1, ...)
 
-    def _selectTweetsListForEncoding(self, preprocessedPlainText, key,
+    def _selectTweetsListForEncoding(self, preprocessedPlainText,
                                      tweetsDatabase):
         """Select and returns a list of tweets that encode the given
-        preprocessedPlainText. It selects Tweets among those provided
+        preprocessedPlainText, and a list of containing the quantity
+        of bits encoded in each tweet. It selects Tweets among those provided
         by the given tweetsDatabase."""
         db = tweetsDatabase
         dim = db.getDimensionOfFeatureVector()
@@ -84,28 +87,87 @@ class Cipher:
                 # print("quantityOfExtraBits: %s" % quantityOfExtraBits)
                 output.append(tweetEOF)
         # print("len(ppt):%d" % len(ppt))
-        return output
+        return (output, [dim for i in range(len(output))])
 
     def _parseTextAsListOfTweets(self, text):
-        """Parses given text and returns a list of Tweet instances."""
-        return []  # todo Stuart
+        """Parses given text and returns a list of Tweet instances,
+        as well as a list of quantity of bits encoded in each tweet."""
+        return ([Tweet("m1", 15, "I'm studying at KAIST1!!"),
+                 Tweet("m2", 16, "I'm studying at KAIST2!!")],
+                [3, 3])  # todo Stuart
 
-    def _recoverDataFromTweetsList(self, listOfTweets, key):
+    def _recoverDataFromTweetsList(self, listOfTweets, listOfBitsPerTweet):
         """Interprets the given list of Tweets. Returns the data hidden in the
         Tweets. It reverses the process of
-        _selectTweetsListForEncoding(preprocessedPlainText, key)"""
-        return []  # todo Matthieu
+        _selectTweetsListForEncoding(preprocessedPlainText)"""
+        tweetQuantity = len(listOfTweets)
+        if tweetQuantity != len(listOfBitsPerTweet):
+            raise ValueError("Both lists should have the same length")
+        totalBitQuantity = 0
+        for quantity in listOfBitsPerTweet:
+            totalBitQuantity += quantity
+        # print(totalBitQuantity - listOfTweets[-1].getFeatureVector())
+        # print((totalBitQuantity - listOfTweets[-1].getFeatureVector()) / 8)
+        # print(math.ceil((totalBitQuantity - listOfTweets[-1].getFeatureVector()) / 8))
+        outputData = bytearray([0] * math.ceil(
+            (totalBitQuantity
+             - listOfTweets[-1].getFeatureVector()  # the last tweet tells us how much bits from the last but one bit are to be removed
+             - listOfBitsPerTweet[-1]) / 8))  # the last tweet does not carry any data
+        # print(len(outputData))
+        output = BitOver(outputData)
+        outputIterator = 0
 
-    def tests(self):
-        print("Testing Cipher (tests below should all return True):")
-        pt = "plainText : Hello World!"
-        key = "password"
-        print(pt == self._reversePlainTextPreprocessing(self._preprocessPlainText(pt, key), key))
+        lastButTwoData = bytearray([0] * math.ceil(listOfBitsPerTweet[-2] / 8))
+        lastButTwo = BitOver(lastButTwoData)
+        lastButTwoDimension = 0
+        for tweetIndex, (tweet, dimension) in enumerate(zip(listOfTweets, listOfBitsPerTweet)):
+            if tweetIndex == tweetQuantity - 1:  # if last tweet
+                bitsToDelete = tweet.getFeatureVector()
+                # bitsToDelete = output.getAsInt(slice(outputIterator,
+                                                     # outputIterator+dimension))
+                # print("bitsToDelete: %d" % bitsToDelete)
+                # output[outputIterator:outputIterator+bitsToDelete] = []
+                output[outputIterator:outputIterator+dimension-bitsToDelete] = featureVector
+            else:
+                featureVector = tweet.getFeatureVector()
+                if tweetIndex == tweetQuantity - 2:  # if last but one tweet
+                    lastButTwo[0:dimension] = featureVector
+                    lastButTwoDimension = dimension
+                else:
+                    # print("%d: %d bits in tweet %s" % (tweetIndex, dimension, tweet))
+                    # output.writeInt(outputIterator, featureVector, dimension)
+                    output[outputIterator:outputIterator+dimension] = featureVector
+                    outputIterator += dimension
 
+        return outputData
+
+
+class TestCipher(unittest.TestCase):
+    def setUp(self):
+        self.cipher = Cipher()
+        self.pt = "plainText : Hello World!"
+        self.key = "password"
+        self.ppt = bytearray("preprocessedPlainText: 101010001110101", "UTF-8")
+
+    def test_preprocessing(self):
+        self.assertEqual(self.pt,
+                         self.cipher._reversePlainTextPreprocessing
+                         (self.cipher._preprocessPlainText(self.pt, self.key),
+                          self.key))
+
+    def test_selectTweetsListForEncoding(self):
         tweetsDatabase = MockDatabase()
-        ppt = bytearray("preprocessedPlainText: 101010001110101")
-        print(ppt == self._recoverDataFromTweetsList(self._selectTweetsListForEncoding(ppt, key, tweetsDatabase), key))
+        listOfTweets, listOfBitsPerTweet = self.cipher._selectTweetsListForEncoding(self.ppt, tweetsDatabase)
+        recoveredData = self.cipher._recoverDataFromTweetsList(listOfTweets, listOfBitsPerTweet)
+        self.assertListEqual(BitOver(self.ppt)[:], BitOver(recoveredData)[:])
+        self.assertListEqual(BitOver(self.ppt)[-8:], BitOver(recoveredData)[-8:])
+        self.assertEqual(self.ppt, recoveredData)
 
-if __name__ == "__main__":
-    c = Cipher()
-    c.tests()
+    def test_encodeAndDecode(self):
+        pass  # todo
+
+    def test__parseTextAsListOfTweets(self):
+        pass  # todo
+
+if __name__ == '__main__':
+    unittest.main()
