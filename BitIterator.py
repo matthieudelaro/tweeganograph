@@ -15,16 +15,21 @@ class Bit:
     left to right as
     most significant bit to least significant bit.
     For example, iterating over [1, 2] will return the following list:
-    [0, 0, 0, 0,   0, 0, 0, 1,            0, 0, 0, 0,   0, 0, 1, 0]"""
+    [0, 0, 0, 0,    0, 0, 0, 1,            0, 0, 0, 0,   0, 0, 1, 0]"""
 
     @staticmethod
     def len(data):
         """Returns the quantity of bits in data."""
-        return len(data)*8
+        return len(data)*8  # data is assumed to be a bytearray,
+        # so each element is 8-bit long
 
     @staticmethod
     def get(data, iterator):
         """Returns the value of the bit pointed by the iterator in data."""
+        # print("START Data / iterator")
+        # print(data)
+        # print(iterator)
+        # print("END Data / iterator")
         byte = iterator / 8
         offset = 7 - (iterator % 8)
         mask = 1 << offset
@@ -71,6 +76,9 @@ class BitOver:
     def len(self):
         return Bit.len(self._data)
 
+    def __len__(self):
+        return Bit.len(self._data)
+
     def get(self, iterator):
         return Bit.get(self._data, iterator)
 
@@ -79,6 +87,29 @@ class BitOver:
 
     def getData(self):
         return self._data
+
+    def __getitem__(self, key):
+        if isinstance(key, slice):
+            #Get the start, stop, and step from the slice
+            return [self[ii] for ii in xrange(*key.indices(len(self)))]
+        elif isinstance(key, int):
+            if key < 0:  # Handle negative indices
+                key += len(self)
+            if key >= len(self):
+                raise IndexError("The index (%d) is out of range." % key)
+            return Bit.get(self._data, key)  # Get the data from elsewhere
+        else:
+            raise TypeError("Invalid argument type.")
+
+    def getAsInt(self, key):
+        bitsList = self.__getitem__(key)
+        power = len(bitsList) - 1
+        output = 0
+        for bit in bitsList:
+            if bit:
+                output += 2 ** power
+            power -= 1
+        return output
 
 
 class TestBitMethods(unittest.TestCase):
@@ -142,6 +173,38 @@ class TestBitOverMethods(unittest.TestCase):
         self.assertTrue(self.bElements.get(15))
         self.assertFalse(self.bValues.get(23))
         self.assertFalse(self.bElements.get(23))
+
+    def test_getItem__(self):
+        self.assertFalse(self.bValues[7])
+        self.assertFalse(self.bElements[7])
+        self.assertTrue(self.bValues[15])
+        self.assertTrue(self.bElements[15])
+        self.assertFalse(self.bValues[23])
+        self.assertFalse(self.bElements[23])
+
+        self.assertListEqual(self.bValues[0:8], [0, 0, 0, 0,      0, 0, 0, 0])
+        self.assertListEqual(self.bElements[0:8], [0, 0, 0, 0,    0, 0, 0, 0])
+        self.assertListEqual(self.bValues[8:16], [0, 0, 0, 0,     0, 0, 0, 1])
+        self.assertListEqual(self.bElements[8:16], [0, 0, 0, 0,   0, 0, 0, 1])
+
+    def test_getAsInt(self):
+        self.assertEqual(self.bValues.getAsInt(slice(0, 8)), 0)
+        self.assertEqual(self.bValues.getAsInt(slice(8, 16)), 1)
+        self.assertEqual(self.bValues.getAsInt(slice(16, 24)), 2)
+        self.assertEqual(self.bValues.getAsInt(slice(24, 32)), 4)
+        self.assertEqual(self.bValues.getAsInt(slice(32, 40)), 8)
+        self.assertEqual(self.bValues.getAsInt(slice(40, 48)), 16)
+        self.assertEqual(self.bValues.getAsInt(slice(0, 24)), 258)
+        self.assertEqual(self.bValues.getAsInt(slice(40, 44)), 1)
+
+        self.assertEqual(self.bElements.getAsInt(slice(0, 8)), 0)
+        self.assertEqual(self.bElements.getAsInt(slice(8, 16)), 1)
+        self.assertEqual(self.bElements.getAsInt(slice(16, 24)), 2)
+        self.assertEqual(self.bElements.getAsInt(slice(24, 32)), 4)
+        self.assertEqual(self.bElements.getAsInt(slice(32, 40)), 8)
+        self.assertEqual(self.bElements.getAsInt(slice(40, 48)), 16)
+        self.assertEqual(self.bElements.getAsInt(slice(0, 24)), 258)
+        self.assertEqual(self.bElements.getAsInt(slice(40, 44)), 1)
 
     def test_set_values(self):
         for counter in range(0, Bit.len(self.values)):

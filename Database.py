@@ -28,14 +28,14 @@ class AbstractDatabase:
 
 
 class MockDatabase(AbstractDatabase):
-    dimensionOfFeatureVector = 3
-    defaultQuantityOfTweetsPerFeatureVector = 10
+    defaultDimensionOfFeatureVector = 3
+    defaultQuantityOfTweetsPerFeatureVector = 50
 
     def __init__(self):
-        self._dimensionOfFeatureVector = MockDatabase.defaultQuantityOfTweetsPerFeatureVector
+        self._dimensionOfFeatureVector = MockDatabase.defaultDimensionOfFeatureVector
         self._tweets = [[]
                         for featureVector
-                        in range(2**MockDatabase.dimensionOfFeatureVector)]
+                        in range(2**self._dimensionOfFeatureVector)]
 
         for featureVector in range(len(self._tweets)):
             self._tweets[featureVector] = [Tweet("pseudo%s_%s" % (featureVector, x), "id%s_%s" % (featureVector, x), "Hello content %s_%s" % (featureVector, x)) for x in range(MockDatabase.defaultQuantityOfTweetsPerFeatureVector)]
@@ -70,14 +70,14 @@ class TestMockDatabase(unittest.TestCase):
         self.db = MockDatabase()
 
     def test_counters(self):
-        for featureVector in range(2**MockDatabase.dimensionOfFeatureVector):
+        for featureVector in range(2**self.db.getDimensionOfFeatureVector()):
             for i in range(MockDatabase.defaultQuantityOfTweetsPerFeatureVector):
                 self.assertIsInstance(self.db.getTweetWithFeatureVector(featureVector),
                                       Tweet)
             self.assertIsNone(self.db.getTweetWithFeatureVector(featureVector))
 
         self.db.resetTweetUsageCounters()
-        for featureVector in range(2**MockDatabase.dimensionOfFeatureVector):
+        for featureVector in range(2**self.db.getDimensionOfFeatureVector()):
             for i in range(MockDatabase.defaultQuantityOfTweetsPerFeatureVector):
                 self.assertIsInstance(self.db.getTweetWithFeatureVector(featureVector),
                                       Tweet)
