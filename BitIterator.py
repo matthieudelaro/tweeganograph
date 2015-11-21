@@ -1,5 +1,5 @@
 # This file describs the Cipher class and provides some tests.
-# It has been designed for Python 3.X. Please upgrade if you
+# It has been designed for Python 3.5. Please upgrade if you
 # are using Python 2.X version.
 
 # Sources:

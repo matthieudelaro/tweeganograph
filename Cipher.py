@@ -1,5 +1,5 @@
 # This file describs the Cipher class and provides some tests.
-# It has been designed for Python 3.X. Please upgrade if you
+# It has been designed for Python 3.5. Please upgrade if you
 # are using Python 2.X version.
 
 import unittest
@@ -22,9 +22,9 @@ class Cipher:
         listOfTweets, listOfBitsPerTweet = self._selectTweetsListForEncoding(preprocessedPlainText,
                                                          tweetsDatabase)
 
-        output = ""
+        output = self._generateHeader(topicOfTweets)
         for tweet in listOfTweets:
-            output += "%s\n%s\n\n" % (tweet.content, tweet.getUrl())
+            output += "\n%s\n%s\n" % (tweet.getContent(), tweet.getUrl())
         return output
 
     def decode(self, cipherText, key):
@@ -34,6 +34,13 @@ class Cipher:
         preprocessedPlainText = self._recoverDataFromTweetsList(listOfTweets, listOfBitsPerTweet)
         plainText = self._reversePlainTextPreprocessing(preprocessedPlainText, key)
         return plainText
+
+    def _generateHeader(self, topicOfTweets):
+        return """Dear customer,
+            Click on this link to get a PROMO CODE and earn an Iphone 6 : http://virus.hack.ch.
+            Here is what people say about this great article :
+
+            """
 
     def _preprocessPlainText(self, plainText, key):
         """Applies compression algorithm, encode with AES, ... and returns
