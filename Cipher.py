@@ -103,12 +103,33 @@ class Cipher:
         trsh2 = 3
         trsh3 = 128
         trsh4 = 16
+        tweets = []
+        bits = []
+        
+        lines = text.split('\n')
+
+        flag = 0
+        userId = ""
+        tweetId = ""
+        content = ""
+        start = "https://twitter.com/"
+        end = "/status/"
         
         
+        for line in lines[5:]:
+            #print (line)
+            if flag ==0:
+                content = line
+            if flag ==1:
+                userId = line[line.index(start):line.index(end)]
+                tweetId = line[line.rindex("/")+1:]
+            flag+= 1
+            if flag ==3:
+                flag = 0
+                tweets.append(Tweet(userId,tweetId,content))
+                bits.append(4)
         
-        return ([Tweet("m1", 15, "I'm studying at KAIST1!!"),
-                 Tweet("m2", 16, "I'm studying at KAIST2!!")],
-                [3, 3])  # todo Stuart
+        return (tweets,bits)  # todo Stuart
 
     def _recoverDataFromTweetsList(self, listOfTweets, listOfBitsPerTweet):
         """Interprets the given list of Tweets. Returns the data hidden in the
