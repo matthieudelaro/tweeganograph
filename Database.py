@@ -5,6 +5,7 @@
 import unittest
 from Tweet import Tweet
 import tweepy
+import csv
 
 
 class AbstractDatabase:
@@ -29,7 +30,7 @@ class AbstractDatabase:
 
 
 class MockDatabase(AbstractDatabase):
-    defaultDimensionOfFeatureVector = 3
+    defaultDimensionOfFeatureVector = 4
     defaultQuantityOfTweetsPerFeatureVector = 50
 
     def __init__(self):
@@ -37,16 +38,17 @@ class MockDatabase(AbstractDatabase):
         self._tweets = [[]
                         for featureVector
                         in range(2**self._dimensionOfFeatureVector)]
+        self.loadTweets()
 
-        for featureVector in range(len(self._tweets)):
-            self._tweets[featureVector] = [Tweet("pseudo%s_%s" % (featureVector, x), "id%s_%s" % (featureVector, x), "Hello content %s_%s" % (featureVector, x)) for x in range(MockDatabase.defaultQuantityOfTweetsPerFeatureVector)]
+        #for featureVector in range(len(self._tweets)):
+        #    self._tweets[featureVector] = [Tweet("pseudo%s_%s" % (featureVector, x), "id%s_%s" % (featureVector, x), "Hello content %s_%s" % (featureVector, x)) for x in range(MockDatabase.defaultQuantityOfTweetsPerFeatureVector)]
 
             # featureVectorByteArray = bytearray(Math.ceil(self._dimensionOfFeatureVector / 8))
             # featureVectorBitOver = BitOver(featureVectorByteArray)
             # featureVectorBitOver.writeInt(0, featureVector)
-            for tweet in self._tweets[featureVector]:
+        #    for tweet in self._tweets[featureVector]:
                 # tweet._featureVector = featureVectorBitOver
-                tweet._featureVector = featureVector
+        #        tweet._featureVector = featureVector
         self.resetTweetUsageCounters()
 
     def resetTweetUsageCounters(self):
@@ -65,6 +67,52 @@ class MockDatabase(AbstractDatabase):
 
     def getDimensionOfFeatureVector(self):
         return self._dimensionOfFeatureVector
+    
+    def loadTweets(self):
+            """Returns Tweets as ... we have to figure out what is best.."""
+            #Returns nested list of the tweets with the features as the index
+            #Index is calculated as hexadecimal value of the 4 features.
+            #The feature order is [length of Author name, length of tweet,
+            # number of hashtags, number of mentions] where a 1 or 0 is set
+            # based on a comparison to some predefined thresholds (trsh1-4)
+            #returns features to be used in later methods.
+            trsh1 = 1
+            trsh2 = 3
+            trsh3 = 128
+            trsh4 = 16
+            #features = []
+            #self.tweets
+            #for f in range(16):
+            #    features.append([])
+            
+            csvFile = open('xboxData.csv')
+            reader = csv.reader(csvFile)
+            x = 0
+            for row in reader:
+                feat1 = 0
+                feat2 = 0
+                feat3 = 0
+                feat4 = 0
+    
+                if (int(row[3])>=trsh1):
+                    feat1 = 1
+                if (int(row[4])>=trsh2):
+                    feat2 = 1
+                if (int(row[5])>=trsh3):
+                    feat3 = 1
+                if (int(row[6])>=trsh4):
+                    feat4 = 1
+                
+                index = feat1 + 2*feat2+4*feat3+8*feat4
+                
+                tw =Tweet(row[1],row[0][2:],row[2])
+                tw._featureVector = index
+                self._tweets[index].append(tw)
+                x+=1
+                if (x>=2500):
+                    return
+            return
+            #return features    
 
 
 class TweetsDatabase(AbstractDatabase):

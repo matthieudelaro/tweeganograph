@@ -4,7 +4,7 @@
 
 import unittest
 import math
-import Tweet
+from Tweet import Tweet
 from Database import MockDatabase
 from BitIterator import BitOver
 
@@ -30,14 +30,14 @@ class Cipher:
     def decode(self, cipherText, key):
         """Decodes a string containing a list of tweets. Returns the decoded
         message."""
-        listOfTweets, listOfBitsPerTweet = self._parseTextAsListOfTweets(cipherText, key)
+        listOfTweets, listOfBitsPerTweet = self._parseTextAsListOfTweets(cipherText)
         preprocessedPlainText = self._recoverDataFromTweetsList(listOfTweets, listOfBitsPerTweet)
         plainText = self._reversePlainTextPreprocessing(preprocessedPlainText, key)
         return plainText
 
     def _generateHeader(self, topicOfTweets):
         return """Dear customer,
-            Click on this link to get a PROMO CODE and earn an Iphone 6 : http://virus.hack.ch.
+            Click on this link to get a PROMO CODE and earn an Xbox One : http://virus.hack.ch.
             Here is what people say about this great article :
 
             """
@@ -99,6 +99,13 @@ class Cipher:
     def _parseTextAsListOfTweets(self, text):
         """Parses given text and returns a list of Tweet instances,
         as well as a list of quantity of bits encoded in each tweet."""
+        trsh1 = 1
+        trsh2 = 3
+        trsh3 = 128
+        trsh4 = 16
+        
+        
+        
         return ([Tweet("m1", 15, "I'm studying at KAIST1!!"),
                  Tweet("m2", 16, "I'm studying at KAIST2!!")],
                 [3, 3])  # todo Stuart

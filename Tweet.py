@@ -55,11 +55,11 @@ class Tweet:
     # private methods computing features
     def _computeMentionsCount(self):
         # todo
-        self._mentionsCount = 0
+        self._mentionsCount = self.content('@')
 
     def _computeHashtagsCount(self):
         #todo
-        self._hashtagsCount = 0
+        self._hashtagsCount = self.content('#')
 
     def _computeLocalization(self, extraDataFromTweeter):
         #todo
