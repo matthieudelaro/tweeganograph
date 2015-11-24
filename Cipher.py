@@ -121,7 +121,7 @@ class Cipher:
             if flag ==0:
                 content = line
             if flag ==1:
-                userId = line[line.index(start):line.index(end)]
+                userId = line[line.index(start)+len(start):line.index(end)]
                 tweetId = line[line.rindex("/")+1:]
             flag+= 1
             if flag ==3:
