@@ -1,0 +1,312 @@
+Status(_api=<tweepy.api.API object at 0x105522be0>
+, place=None
+, id_str='668986281427394560'
+, in_reply_to_status_id=668941494061961216
+, favorited=False
+, id=668986281427394560
+, source='Sprinklr'
+, user=User(follow_request_sent=False
+, verified=True
+, id_str='24742040'
+, profile_background_tile=True
+, name='Xbox'
+, is_translator=False
+, location=''
+, profile_sidebar_border_color='000000'
+, utc_offset=-28800
+, description='Welcome to the official @Xbox Twitter feed, your source for news, console info, game releases, events, sports, & more. For help, please contact @XboxSupport.'
+, profile_use_background_image=False
+, profile_image_url='http://pbs.twimg.com/profile_images/508148874783883264/pAlsZS4e_normal.png'
+, _json={'favourites_count': 3294
+, 'follow_request_sent': False
+, 'profile_background_image_url': 'http://pbs.twimg.com/profile_background_images/453208249378959360/QF9ykJFC.jpeg'
+, 'statuses_count': 124725
+, 'profile_sidebar_fill_color': 'EFEFEF'
+, 'friends_count': 18052
+, 'profile_background_color': '107C10'
+, 'profile_image_url': 'http://pbs.twimg.com/profile_images/508148874783883264/pAlsZS4e_normal.png'
+, 'contributors_enabled': False
+, 'screen_name': 'Xbox'
+, 'default_profile': False
+, 'profile_background_tile': True
+, 'name': 'Xbox'
+, 'location': ''
+, 'profile_sidebar_border_color': '000000'
+, 'profile_background_image_url_https': 'https://pbs.twimg.com/profile_background_images/453208249378959360/QF9ykJFC.jpeg'
+, 'has_extended_profile': False
+, 'utc_offset': -28800
+, 'is_translation_enabled': False
+, 'profile_text_color': '333333'
+, 'profile_banner_url': 'https://pbs.twimg.com/profile_banners/24742040/1447872991'
+, 'verified': True
+, 'id': 24742040
+, 'description': 'Welcome to the official @Xbox Twitter feed
+, your source for news
+, console info
+, game releases
+, events
+, sports
+, & more. For help
+, please contact @XboxSupport.'
+, 'default_profile_image': False
+, 'profile_image_url_https': 'https://pbs.twimg.com/profile_images/508148874783883264/pAlsZS4e_normal.png'
+, 'profile_use_background_image': False
+, 'protected': False
+, 'is_translator': False
+, 'created_at': 'Mon Mar 16 18:30:52 +0000 2009'
+, 'listed_count': 14014
+, 'url': None
+, 'followers_count': 7122016
+, 'profile_link_color': '107C10'
+, 'lang': 'en'
+, 'geo_enabled': False
+, 'notifications': False
+, 'following': False
+, 'id_str': '24742040'
+, 'entities': {'description': {'urls': []}}
+, 'time_zone': 'Pacific Time (US & Canada)'}
+, default_profile_image=False
+, listed_count=14014
+, url=None
+, profile_link_color='107C10'
+, lang='en'
+, entities={'description': {'urls': []}}
+, time_zone='Pacific Time (US & Canada)'
+, favourites_count=3294
+, profile_background_image_url='http://pbs.twimg.com/profile_background_images/453208249378959360/QF9ykJFC.jpeg'
+, statuses_count=124725
+, _api=<tweepy.api.API object at 0x105522be0>
+, profile_sidebar_fill_color='EFEFEF'
+, friends_count=18052
+, profile_background_color='107C10'
+, contributors_enabled=False
+, screen_name='Xbox'
+, default_profile=False
+, profile_text_color='333333'
+, geo_enabled=False
+, profile_background_image_url_https='https://pbs.twimg.com/profile_background_images/453208249378959360/QF9ykJFC.jpeg'
+, notifications=False
+, is_translation_enabled=False
+, has_extended_profile=False
+, profile_banner_url='https://pbs.twimg.com/profile_banners/24742040/1447872991'
+, id=24742040
+, profile_image_url_https='https://pbs.twimg.com/profile_images/508148874783883264/pAlsZS4e_normal.png'
+, protected=False
+, created_at=datetime.datetime(2009
+, 3
+, 16
+, 18
+, 30
+, 52)
+, followers_count=7122016
+, following=False)
+, contributors=None
+, in_reply_to_status_id_str='668941494061961216'
+, in_reply_to_screen_name='kev3233'
+, in_reply_to_user_id_str='2457335182'
+, coordinates=None
+, author=User(follow_request_sent=False
+, verified=True
+, id_str='24742040'
+, profile_background_tile=True
+, name='Xbox'
+, is_translator=False
+, location=''
+, profile_sidebar_border_color='000000'
+, utc_offset=-28800
+, description='Welcome to the official @Xbox Twitter feed
+, your source for news
+, console info
+, game releases
+, events
+, sports
+, & more. For help
+, please contact @XboxSupport.'
+, profile_use_background_image=False
+, profile_image_url='http://pbs.twimg.com/profile_images/508148874783883264/pAlsZS4e_normal.png'
+, _json={'favourites_count': 3294
+, 'follow_request_sent': False
+, 'profile_background_image_url': 'http://pbs.twimg.com/profile_background_images/453208249378959360/QF9ykJFC.jpeg'
+, 'statuses_count': 124725
+, 'profile_sidebar_fill_color': 'EFEFEF'
+, 'friends_count': 18052
+, 'profile_background_color': '107C10'
+, 'profile_image_url': 'http://pbs.twimg.com/profile_images/508148874783883264/pAlsZS4e_normal.png'
+, 'contributors_enabled': False
+, 'screen_name': 'Xbox'
+, 'default_profile': False
+, 'profile_background_tile': True
+, 'name': 'Xbox'
+, 'location': ''
+, 'profile_sidebar_border_color': '000000'
+, 'profile_background_image_url_https': 'https://pbs.twimg.com/profile_background_images/453208249378959360/QF9ykJFC.jpeg'
+, 'has_extended_profile': False
+, 'utc_offset': -28800
+, 'is_translation_enabled': False
+, 'profile_text_color': '333333'
+, 'profile_banner_url': 'https://pbs.twimg.com/profile_banners/24742040/1447872991'
+, 'verified': True
+, 'id': 24742040
+, 'description': 'Welcome to the official @Xbox Twitter feed
+, your source for news
+, console info
+, game releases
+, events
+, sports
+, & more. For help
+, please contact @XboxSupport.'
+, 'default_profile_image': False
+, 'profile_image_url_https': 'https://pbs.twimg.com/profile_images/508148874783883264/pAlsZS4e_normal.png'
+, 'profile_use_background_image': False
+, 'protected': False
+, 'is_translator': False
+, 'created_at': 'Mon Mar 16 18:30:52 +0000 2009'
+, 'listed_count': 14014
+, 'url': None
+, 'followers_count': 7122016
+, 'profile_link_color': '107C10'
+, 'lang': 'en'
+, 'geo_enabled': False
+, 'notifications': False
+, 'following': False
+, 'id_str': '24742040'
+, 'entities': {'description': {'urls': []}}
+, 'time_zone': 'Pacific Time (US & Canada)'}
+, default_profile_image=False
+, listed_count=14014
+, url=None
+, profile_link_color='107C10'
+, lang='en'
+, entities={'description': {'urls': []}}
+, time_zone='Pacific Time (US & Canada)'
+, favourites_count=3294
+, profile_background_image_url='http://pbs.twimg.com/profile_background_images/453208249378959360/QF9ykJFC.jpeg'
+, statuses_count=124725
+, _api=<tweepy.api.API object at 0x105522be0>
+, profile_sidebar_fill_color='EFEFEF'
+, friends_count=18052
+, profile_background_color='107C10'
+, contributors_enabled=False
+, screen_name='Xbox'
+, default_profile=False
+, profile_text_color='333333'
+, geo_enabled=False
+, profile_background_image_url_https='https://pbs.twimg.com/profile_background_images/453208249378959360/QF9ykJFC.jpeg'
+, notifications=False
+, is_translation_enabled=False
+, has_extended_profile=False
+, profile_banner_url='https://pbs.twimg.com/profile_banners/24742040/1447872991'
+, id=24742040
+, profile_image_url_https='https://pbs.twimg.com/profile_images/508148874783883264/pAlsZS4e_normal.png'
+, protected=False
+, created_at=datetime.datetime(2009
+, 3
+, 16
+, 18
+, 30
+, 52)
+, followers_count=7122016
+, following=False)
+, in_reply_to_user_id=2457335182
+, created_at=datetime.datetime(2015
+, 11
+, 24
+, 2
+, 55
+, 33)
+, retweet_count=1
+, retweeted=False
+, geo=None
+, _json={'place': None
+, 'id_str': '668986281427394560'
+, 'in_reply_to_status_id': 668941494061961216
+, 'favorited': False
+, 'id': 668986281427394560
+, 'source': '<a href="http://www.sprinklr.com" rel="nofollow">Sprinklr</a>'
+, 'user': {'favourites_count': 3294
+, 'follow_request_sent': False
+, 'profile_background_image_url': 'http://pbs.twimg.com/profile_background_images/453208249378959360/QF9ykJFC.jpeg'
+, 'statuses_count': 124725
+, 'profile_sidebar_fill_color': 'EFEFEF'
+, 'friends_count': 18052
+, 'profile_background_color': '107C10'
+, 'profile_image_url': 'http://pbs.twimg.com/profile_images/508148874783883264/pAlsZS4e_normal.png'
+, 'contributors_enabled': False
+, 'screen_name': 'Xbox'
+, 'default_profile': False
+, 'profile_background_tile': True
+, 'name': 'Xbox'
+, 'location': ''
+, 'profile_sidebar_border_color': '000000'
+, 'profile_background_image_url_https': 'https://pbs.twimg.com/profile_background_images/453208249378959360/QF9ykJFC.jpeg'
+, 'has_extended_profile': False
+, 'utc_offset': -28800
+, 'is_translation_enabled': False
+, 'profile_text_color': '333333'
+, 'profile_banner_url': 'https://pbs.twimg.com/profile_banners/24742040/1447872991'
+, 'verified': True
+, 'id': 24742040
+, 'description': 'Welcome to the official @Xbox Twitter feed
+, your source for news
+, console info
+, game releases
+, events
+, sports
+, & more. For help
+, please contact @XboxSupport.'
+, 'default_profile_image': False
+, 'profile_image_url_https': 'https://pbs.twimg.com/profile_images/508148874783883264/pAlsZS4e_normal.png'
+, 'profile_use_background_image': False
+, 'protected': False
+, 'is_translator': False
+, 'created_at': 'Mon Mar 16 18:30:52 +0000 2009'
+, 'listed_count': 14014
+, 'url': None
+, 'followers_count': 7122016
+, 'profile_link_color': '107C10'
+, 'lang': 'en'
+, 'geo_enabled': False
+, 'notifications': False
+, 'following': False
+, 'id_str': '24742040'
+, 'entities': {'description': {'urls': []}}
+, 'time_zone': 'Pacific Time (US & Canada)'}
+, 'contributors': None
+, 'in_reply_to_status_id_str': '668941494061961216'
+, 'in_reply_to_screen_name': 'kev3233'
+, 'in_reply_to_user_id_str': '2457335182'
+, 'coordinates': None
+, 'in_reply_to_user_id': 2457335182
+, 'created_at': 'Tue Nov 24 02:55:33 +0000 2015'
+, 'retweet_count': 1
+, 'retweeted': False
+, 'geo': None
+, 'truncated': False
+, 'is_quote_status': False
+, 'text': "@kev3233 Glad you like it Kev! What's your favorite part of the NXOE?"
+, 'favorite_count': 5
+, 'lang': 'en'
+, 'entities': {'urls': []
+, 'hashtags': []
+, 'user_mentions': [{'indices': [0
+, 8]
+, 'screen_name': 'kev3233'
+, 'id_str': '2457335182'
+, 'name': 'KEVDOGG'
+, 'id': 2457335182}]
+, 'symbols': []}}
+, truncated=False
+, is_quote_status=False
+, text="@kev3233 Glad you like it Kev! What's your favorite part of the NXOE?"
+, entities={'urls': []
+, 'hashtags': []
+, 'user_mentions': [{'indices': [0
+, 8]
+, 'screen_name': 'kev3233'
+, 'id_str': '2457335182'
+, 'name': 'KEVDOGG'
+, 'id': 2457335182}]
+, 'symbols': []}
+, favorite_count=5
+, lang='en'
+, source_url='http://www.sprinklr.com')

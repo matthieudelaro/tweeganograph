@@ -73,7 +73,7 @@ class TweetDatabase(AbstractDatabase):
     defaultQuantityOfTweetsPerFeatureVector = 50
 
     def __init__(self):
-        self._dimensionOfFeatureVector = MockDatabase.defaultDimensionOfFeatureVector
+        self._dimensionOfFeatureVector = TweetDatabase.defaultDimensionOfFeatureVector
         self._tweets = [[]
                         for featureVector
                         in range(2**self._dimensionOfFeatureVector)]
@@ -142,7 +142,7 @@ class TweetDatabase(AbstractDatabase):
                 if (int(row[6])>=trsh4):
                     feat4 = 1
 
-                index = feat1 + 2*feat2+4*feat3+8*feat4
+                index = feat1 + 2*feat2 + 4*feat3 + 8*feat4
 
                 tw =Tweet(row[1],row[0][2:],row[2])
                 tw._featureVector = index
@@ -177,6 +177,14 @@ class TestMockDatabase(unittest.TestCase):
                 self.assertIsInstance(self.db.getTweetWithFeatureVector(featureVector),
                                       Tweet)
             self.assertIsNone(self.db.getTweetWithFeatureVector(featureVector))
+
+
+class TestTweetDatabase(unittest.TestCase):
+    def setUp(self):
+        self.db = TweetDatabase()
+
+    def test_counters(self):
+        pass
 
 
 if __name__ == '__main__':

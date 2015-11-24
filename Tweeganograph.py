@@ -17,7 +17,7 @@ def usage():
 def main(argv):
     # helper : http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
     usage()
-    db = Database.MockDatabase()
+    db = Database.TweetDatabase()
     cipher = Cipher()
     print()
     print()

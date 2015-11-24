@@ -9,16 +9,17 @@ auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 print(api.me().name)
-user = api.get_user('gsct') # any name of twitter account
+user = api.get_user('obama') # any name of twitter account
 print('--------------------------')
 print('User Object')
 print(user.id, user.name, user.friends_count, user.location)
 print('--------------------------')
 print('--------------------------')
 print('Status Object')
-mytimeline = api.user_timeline('gsct')
+mytimeline = api.user_timeline('xbox')
 for tweet in mytimeline:
-    print (tweet.id, tweet.text)
+    print(tweet)
+    # print (tweet.id, tweet.text)
 print ('--------------------------')
 
 #print (tweet.mentions)
@@ -36,7 +37,7 @@ print (srch.entities)
     #n = i.user.name
     #csvWriter.writerow(['**'+str(i.id),n.encode('utf-8'),s.encode('utf-8'),s.count('@'),s.count('#'),len(s)])
     #x+=1
-    
+
 #srch =tweepy.Cursor( api.search,q ='#iPhone', lang = 'en').items(180)
 #for i in srch:
     #s = i.text
@@ -64,7 +65,7 @@ print (srch.entities)
     #n = i.user.name
     #csvWriter.writerow(['**'+str(i.id),n.encode('utf-8'),s.encode('utf-8'),s.count('@'),s.count('#'),len(s)])
     #x+=1
-    
+
 #srch =tweepy.Cursor( api.search,q ='#Samsung', lang = 'en').items(100)
 #for i in srch:
     #s = i.text
@@ -77,7 +78,7 @@ print (srch.entities)
     #n = i.user.name
     #csvWriter.writerow(['**'+str(i.id),n.encode('utf-8'),s.encode('utf-8'),s.count('@'),s.count('#'),len(s)])
     #x+=1
-    
+
 #csvFile.close()
 #print (x)
 

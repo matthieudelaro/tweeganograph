@@ -99,10 +99,6 @@ class Cipher:
     def _parseTextAsListOfTweets(self, text):
         """Parses given text and returns a list of Tweet instances,
         as well as a list of quantity of bits encoded in each tweet."""
-        trsh1 = 1
-        trsh2 = 3
-        trsh3 = 128
-        trsh4 = 16
         tweets = []
         bits = []
 
@@ -115,21 +111,20 @@ class Cipher:
         start = "https://twitter.com/"
         end = "/status/"
 
-
         for line in lines[5:]:
             #print (line)
-            if flag ==0:
+            if flag == 0:
                 content = line
-            if flag ==1:
+            if flag == 1:
                 userId = line[line.index(start)+len(start):line.index(end)]
                 tweetId = line[line.rindex("/")+1:]
-            flag+= 1
-            if flag ==3:
+            flag += 1
+            if flag == 3:
                 flag = 0
-                tweets.append(Tweet(userId,tweetId,content))
+                tweets.append(Tweet(userId, tweetId, content))
                 bits.append(4)
 
-        return (tweets,bits)  # todo Stuart
+        return (tweets, bits)  # todo Stuart
 
     def _recoverDataFromTweetsList(self, listOfTweets, listOfBitsPerTweet):
         """Interprets the given list of Tweets. Returns the data hidden in the
