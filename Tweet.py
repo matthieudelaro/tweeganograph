@@ -12,11 +12,14 @@ class Tweet:
         self._id = id
         self._author = author
         self._content = content
+        self.inflateFeaturesFromContent()
+        
 
     def inflateFeaturesFromContent(self):
         """Process the content of the tweet to compute some features."""
         self._computeHashtagsCount()
         self._computeMentionsCount()
+        self._computeFeaturesVector()
         return self
 
     def inflateFeaturesFromUrl(self):
@@ -54,25 +57,66 @@ class Tweet:
 
     # private methods computing features
     def _computeMentionsCount(self):
-        # todo
-        self._mentionsCount = 0
+        
+        self._mentionsCount = self._content.count('@')
+        return
+       # return self._content.count('@')
 
     def _computeHashtagsCount(self):
-        #todo
-        self._hashtagsCount = 0
+        
+        self._hashtagsCount = self._content.count('#')
+        return
+        #return self._content.count('#')
 
     def _computeLocalization(self, extraDataFromTweeter):
         #todo
         pass
+    
+    def _computeFeaturesVector(self):
+        trsh1 = 1
+        trsh2 = 3
+        trsh3 = 128
+        trsh4 = 16
+        index = 0
+                
+        
+        if (self._mentionsCount>=trsh1):
+            index += 1
+        if (self._hashtagsCount>=trsh2):
+            index += 2
+        if (len(self._content)>=trsh3):
+            index += 4
+        if (len(self._author)>=trsh4):
+            index += 8
+            
+        self._featureVector = index
 
     def getFeatureVector(self):
+        #trsh1 = 1
+        #trsh2 = 3
+        #trsh3 = 128
+        #trsh4 = 16
+        #index = 0
+        
+
+        #if (self._mentionsCount>=trsh1):
+            #index += 1
+        #if (self._hashtagsCount>=trsh2):
+            #index += 2
+        #if (len(self._content)>=trsh3):
+            #index += 4
+        #if (len(self._author)>=trsh4):
+            #index += 8
+        
+        #index =feat1 + 2*feat2+4*feat3+8*feat4
+        #return index
         return self._featureVector
 
 
 def tests():
     print("Testing Tweet")
-    t = Tweet("me", 15, "I'm studying at KAIST!!!")
-    print(t)
+    t = Tweet("me", 15, "#I'm #studying at #KAIST!!!")
+    print(t.getFeatureVector())
 
 if __name__ == "__main__":
     tests()
