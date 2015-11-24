@@ -105,7 +105,7 @@ class Cipher:
         trsh4 = 16
         tweets = []
         bits = []
-        
+
         lines = text.split('\n')
 
         flag = 0
@@ -114,8 +114,8 @@ class Cipher:
         content = ""
         start = "https://twitter.com/"
         end = "/status/"
-        
-        
+
+
         for line in lines[5:]:
             #print (line)
             if flag ==0:
@@ -128,7 +128,7 @@ class Cipher:
                 flag = 0
                 tweets.append(Tweet(userId,tweetId,content))
                 bits.append(4)
-        
+
         return (tweets,bits)  # todo Stuart
 
     def _recoverDataFromTweetsList(self, listOfTweets, listOfBitsPerTweet):

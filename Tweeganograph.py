@@ -24,7 +24,7 @@ def main(argv):
     spam = cipher.encode("your plaintext", "awesome password", "topic", db)
     print("Here is your spam:")
     print(spam)
-    
+
     print(cipher.decode(spam,"awesome password"))
 
 if __name__ == "__main__":
