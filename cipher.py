@@ -1,668 +1,205 @@
+# This file describs the Cipher class and provides some tests.
+# It has been designed for Python 3.5. Please upgrade if you
+# are using Python 2.X version.
+
+import unittest
 import math
-#import base64
-import hashlib
-import sys
-#import binascii
-#from Crypto.Cipher import AES
-#from Crypto import Random
-import random,string
-import myhuffman
-import AESCipher
-import array
+from Tweet import Tweet
+from Database import MockDatabase
+from BitIterator import BitOver
+import Tools
 
-#if os is linux this might be better
-
-def _pad(s,size):
-    return s+chr(size-len(s)%size)*(size-len(s)%size)
-
-def _unpadd(s):
-    return s[:-ord(s[len(s)-1:])]
-
-def back(secret,n):
-    num=len(secret)//n
-    lst=[]
-    trace=0
-    for i in range(num):
-        val=0
-        for j in range(n):
-            val+=int(secret[len(secret)-1-(i*n+j)])*pow(2,j)
-            trace+=1
-        lst.append(val)
-    diff=len(secret)-trace
-    val=0
-    for i in range(diff):
-        val+=int(secret[diff-1-i])*pow(2,i)
-    lst.append(val)
-    lst.reverse()
-    return lst,diff
-
-def to_binary(b_data_l,n,last_n): #b_data는 bytes임
-        b_data=""
-        for i in range(len(b_data_l)):
-            temp="{0:b}".format(b_data_l[len(b_data_l)-1-i])
-            if len(b_data_l)-1-i!=0:
-                diff=n-len(temp)
-                temp='0'*diff+temp
-            else:
-                diff=last_n-len(temp)
-                print("in...:",str(diff))
-                temp='0'*diff+temp
-            b_data=temp+b_data
-        return b_data
-
-    
-class EMD:
-    def __init__(self,N,K):
-        self.N=N
-        self.K=K
-        self.ary=2*N+1
-        self.L=math.floor(self.K*math.log2(self.ary))
-        self.num_lst=[]
-#most recent_version
-    def to_binary(self,s_data,no_secret=0):
-        b_data_l=bytes(s_data,"utf-8")
-
-        #print(b_data_l)
-        b_data=""
-        for i in range(len(b_data_l)):
-            temp="{0:b}".format(b_data_l[i])
-            if no_secret==0:
-                diff=7-len(temp)
-                temp='0'*diff+temp
-                #self.num_lst.append(len(temp))   
-            b_data=b_data+temp
-        #print(b_data)
-        #print(self.num_lst)
-        return b_data
-    
-#most recent version
-    def to_string(self,s_data):#for secret,먼저 zero padding지우고 그다음 변환
-        t_len=len(s_data)
-    
-        index=0
-        k_len=0
-        for i in self.num_lst:
-            k_len+=i  
-
-        tame=0
-        for x in s_data:
-            if x=='0':
-                if len(s_data)-tame-1<k_len:
-                    break;
-                tame+=1
-            else:
-                break
-        #s_data=s_data[tame:]
-        
-        #t_len=len(s_data)
-        #print("length: ",str(t_len))
-        
-        b_lst=[]
-        print("index range: ",self.num_lst)
-        #for i in self.num_lst:
-            #val=0
-            #for j in range(i):
-                #val+=int(s_data[index+j])*pow(2,i-1-j)
-                #print(index+j)
-            #b_lst.append(val)
-            #index=index+i
-
-        b_iter=int(len(s_data)/7)
-        for i in range(b_iter):
-            val=0
-            for j in range(7):
-                val+=int(s_data[i*7+j])*pow(2,7-1-j)
-            b_lst.append(val)
-        
-        
-        b_data=bytes(b_lst) #list이므로
-        print(b_data)
-    #   try:
-            #r_data=b_data.decode()
-        #except Exception as e:
-        r_data=""
-        for x in b_data:
-            r_data+=chr(x)
-        return r_data
-        #sys.exit()
-        
-    def to_string_aes(self,data):
-        lst,diff=back(data,7)
-        print(lst)
-        r_data=(bytes(lst)).decode()
-        return r_data,diff
-
-    def to_back_aes(r_data):
-        temp=bytes(r_data,"utf-8")
-        
-                      
-    def transform(self,s_data): #s_data는 binary string임
-        K_ary_r=[]
-        count=1
-        temp=0
-        idx=0
-        n_digit=0
-        #form_b="{0:0"+str(len(s_data)*8)+"b}"
-
-        #bitcode=self.to_binary(s_data) #num_lst가 생성*****
-        bitcode=s_data #이미 binary string임
-        print("transform:",bitcode)
-        #bitcode=''.join(["{0:b}".format(x) for x in binascii.a2b_base64(s_data)])
-        #bitcode=''.join(["{0:b}".format(x) for x in bytes(s_data)])
-        b_size=len(bitcode)
-        
-        while count*self.L<=b_size:
-            temp=0
-            in_L=1
-            n_digit=0
-            #print(str(idx)+"\n")
-            for j in range(self.L):
-                temp+=int(bitcode[len(bitcode)-1-idx])*pow(2,j)
-                idx=idx+1
-            K_ary_r.append([])
-            while temp!=0 or in_L:
-                in_L=0
-                each_d=temp%self.ary
-                temp=temp//self.ary
-                K_ary_r[count-1].append(each_d)
-                n_digit=n_digit+1
-            if n_digit<self.K:
-                for i in range(self.K-n_digit):
-                    K_ary_r[count-1].append(0)
-            count=count+1
-
-        n_digit=0
-        if idx<b_size:
-            #print("additional\n")
-            temp=0
-            in_L=1
-            remain_b=b_size-idx
-            for j in range(remain_b):
-                temp+=int(bitcode[len(bitcode)-1-idx])*pow(2,j)
-                idx=idx+1
-            while temp!=0 or in_L:
-                in_L=0
-                each_d=temp%self.ary
-                temp=temp//self.ary
-                K_ary_r.append([])
-                K_ary_r[count-1].append(each_d)
-                n_digit=n_digit+1
-
-            if n_digit<self.K:
-                for i in range(self.K-n_digit):
-                    K_ary_r[count-1].append(0)
-
-        for i in range(len(K_ary_r)):
-            K_ary_r[i].reverse()
-        K_ary_r.reverse()
-        #print("K_ary_r:")
-        #print(K_ary_r)
-        return K_ary_r
-
-    #k-ary-r을 01 string으로 back -->이후에 to_string 이루어져야 완벽한 복구
-    def back(self,K_ary_r):
-        m_data=""
-        #k_len=len(K_ary_r) #new
-        #trace=0 #new
-        for lst in K_ary_r:
-            val=0
-            #trace+=1 #new
-            for i in range(self.K):
-                val+=lst[i]*pow(self.ary,self.K-1-i)
-            bits_v="{0:b}".format(val)
-            b_len=len(bits_v)
-            #zero-padding -->맨앞의 경우 to_string시 제거된다.
-
-            #if trace!=0: #new
-            for i in range(self.L-b_len):
-                bits_v=str(0)+bits_v
-            m_data=m_data+bits_v
-            
-        return m_data
-    
-    def old_embedd(self,data,c_digit,seq):
-        d=0
-        value=0
-        bitcode=''.join(["{0:b}".format(x) for x in data.encode()])
-
-        for i in range(self.N):
-            d+=int(bitcode[seq[i]])*pow(2,i)
-
-        d=d%self.ary
-        if c_digit!=d:
-            s=(c_digit-d)%self.ary
-            val=0
-            for i in range(len(bitcode)):
-                val+=int(bitcode[i])*pow(2,i)
-            if s<=self.N:
-                value=val+(1<<seq[s])
-            else:
-                value=val-(1<<seq[s])
-        else:
-            for i in range(len(bitcode)):
-                value+=int(bitcode[i])*pow(2,i)
-
-        r_b="{0:b}".format(value)
-        return r_b
-    
-    def embedd(self,data,c_digit,seq):#data는 binary string이다.(이미 encrypt에서 to_binary거침)
-        d=0
-        value=0
-        bitcode=data
-
-        for i in range(self.N):
-            d+=int(bitcode[len(bitcode)-1-seq[i]])*pow(2,seq[i])
-        d=d%self.ary
-        bits=""
-        if c_digit!=d:
-            form="{0:0"+str(self.N)+"b}"
-            #bits=form.format(c_digit)
-            for i in range(pow(2,self.N)):
-                bits=form.format(i)
-                val=0
-                for j in range(len(bits)):
-                    val+=pow(2,seq[j])*int(bits[len(bits)-1-j])
-                if val%self.ary==c_digit:
-                    break
-                else:
-                    continue
-            b_lst=[]
-            for i in range(len(bitcode)):
-                b_lst.append(bitcode[i])
-            for i in range(len(bits)):
-                b_lst[len(b_lst)-1-seq[i]]=bits[len(bits)-1-i]
-            bitcode=''.join(b_lst)
-        return bitcode
-    
-    def old_extract(self,data,seq):
-        bitcode=''.join(["{0:b}".format(x) for x in data.encode()])
-        value=0
-        for i in range(self.N):
-            value+=int(bitcode[seq[i]])*(pow(2,i))
-        value=value%self.ary
-        return value
-    
-    def extract(self,data,seq): #data는 binary string이고 한 digit을 return 
-        value=0
-        for i in range(self.N):
-            value+=int(data[len(data)-1-seq[i]])*(pow(2,seq[i]))
-        value=value%self.ary
-        #print(value)
-        return value
-
-
-#RC4 START
-
-class RC4:
-    def __init__(self,S_len):
-        self.S_len=S_len
-        self.S=[]
-        
-    def ksa(self,key,seq=[]):
-        if seq==[]:
-            key_len=len(key)
-            for i in range(self.S_len):
-                self.S.append(i)
-        else:
-            key_len=len(key)
-            for i in range(self.S_len):
-                self.S.append(seq[i])
-    
-        j=0
-        for i in range(self.S_len):
-            j=(j+self.S[i]+ord(key[i%key_len]))%self.S_len
-            temp=self.S[i]
-            self.S[i]=self.S[j]
-            self.S[j]=temp
-
-    def prng(self,rs_len,ary,N,sub,ref_seq=[]): #if sub==1 extra check is needed
-        RS=[]
-        flag=[]
-        count=0
-        count_n=0
-        i=0; j=0
-        chk_lst=[]#flag substitute
-        
-        for i in range(rs_len): #ususally rs_len ==self.S_len
-            flag.append(0)
-        
-        while count<rs_len:
-            if count%N==0:
-                count_n=0
-            again=0
-            i=(i+1)%self.S_len
-            j=(j+self.S[j])%self.S_len
-            temp=self.S[i]
-            self.S[i]=self.S[j]
-            self.S[j]=temp
-            k=self.S[(self.S[i]+self.S[j])%self.S_len]
-            if ref_seq==[]:
-#                print("in")
-                if flag[k]!=0:
-                    continue
-                if count_n!=0 and sub:
-                    for i in range(count_n):
-                        if pow(2,RS[count-count_n+i])%ary==pow(2,k)%ary:
-                            again=1
-                if again!=0:
-                    continue
-                flag[k]=1
-                RS.append(k)
-                count=count+1
-                count_n=count_n+1
-            else:
-                if k not in chk_lst:
-                   #print(k)
-                    chk_lst.append(k)
-                    RS.append(k)
-                    count=count+1
-                else:
-                    continue
-            
-        return RS
 
 class Cipher:
-    def __init__(self,key_1,key_2,emd):
-        self.key_1=key_1
-        self.key_2=key_2
-        self.secret_len=0
-        self.s_seq=[]
-        self.f_seq=[]
-        self.emd=emd
-        self.last_n=0
-        
-    def set_seq(self,f_seq,start):
-        s_seq=[]
-        for i in range(self.emd.N):
-            s_seq.append(f_seq[start+i])
-        return s_seq
 
-    def randomize(self,S_len):
-        #S_len=len(PT)*8
-        #S_len=len(''.join(["{0:b}".format(x) for x in PT.encode()]))
+    def encode(self, plainText, key, topicOfTweets, tweetsDatabase):
+        """Returns a string containing a list of tweets encoding the plaintext.
+        First it pre-processes the plaintext with compression algorithm and AES
+        encryption (this is the usage of the key). Then it selects tweets that
+        can convey the pre-processed plaintext, and renders them as text,
+        which is returned. Given tweetDatabase contains all the Tweets that
+        the cipher can use to encode the given plainText."""
+        preprocessedPlainText = self._preprocessPlainText(plainText, key)
+        listOfTweets, listOfBitsPerTweet = self._selectTweetsListForEncoding(preprocessedPlainText,
+                                                         tweetsDatabase)
 
-        #S_len=len(''.join(["{0:b}".format(x) for x in bytes(PT,"utf-8")])) #******
-        num_b=math.floor(S_len/self.emd.N) 
-        #num_b=math.floor(S_len/self.emd.L)
-        #result_seq=[]
-        
-        rc4_1=RC4(S_len)
-        rc4_1.ksa(self.key_1)
-        self.f_seq=rc4_1.prng(rc4_1.S_len,self.emd.ary,self.emd.N,1)
+        output = self._generateHeader(topicOfTweets)
+        for tweet in listOfTweets:
+            output += "\n%s\n%s\n" % (tweet.getContent(), tweet.getUrl())
+        return output
 
-        rc4_2=RC4(self.emd.N)
-        for i in range(num_b):
-            temp_seq=self.set_seq(self.f_seq,i*self.emd.N)
-            #print(temp_seq)
-            rc4_2.S=[]
-            rc4_2.ksa(self.key_2,temp_seq)
-            #print(rc4_2.S)
-            self.s_seq.append(rc4_2.prng(rc4_2.S_len,self.emd.ary,self.emd.N,0,self.f_seq))
-            
+    def decode(self, cipherText, key):
+        """Decodes a string containing a list of tweets. Returns the decoded
+        message."""
+        listOfTweets, listOfBitsPerTweet = self._parseTextAsListOfTweets(cipherText)
+        preprocessedPlainText = self._recoverDataFromTweetsList(listOfTweets, listOfBitsPerTweet)
+        plainText = self._reversePlainTextPreprocessing(preprocessedPlainText, key)
+        return plainText
 
-    def encrypt(self,secret): #secret은 binary string임
-        #S_len=len(PT)
-        #self.randomize(S_len)
-        K_ary_r=self.emd.transform(secret)
-        n_lst=0
-        for i in range(len(K_ary_r)):
-            if K_ary_r[i]==[]:
-                n_lst=n_lst+1
+    def _generateHeader(self, topicOfTweets):
+        return """Dear customer,
+            Click on this link to get a PROMO CODE and earn an Xbox One : http://virus.hack.ch.
+            Here is what people say about this great article :
+            """
+
+    def _preprocessPlainText(self, plainText, key):
+        """Applies compression algorithm, encode with AES, ... and returns
+        bytes. The process must be reversible with
+        __reversePlainTextPreprocessing(plainText, key)."""
+        # examples about bytes and bytearray: http://www.dotnetperls.com/bytes
+        # some crypto module that seems nice: https://pypi.python.org/pypi/pycrypto
+        return bytearray(plainText, 'UTF-8')  # todo Juyasohn.
+        # warning : take care of encoding issues (UTF-8, Latin1, ...)
+        # return Tools.preprocess(plainText, key, key, key, 3, 5, 16)
+
+    def _reversePlainTextPreprocessing(self, preprocessedPlainText, key):
+        """Reverses the process of _preprocessPlainText(plainText, key) by
+        returning a string from the given bytes preprocessedPlainText."""
+        return preprocessedPlainText.decode("UTF-8")  # todo Juyasohn
+        # warning : take care of encoding issues (UTF-8, Latin1, ...)
+        # return
+
+    def _selectTweetsListForEncoding(self, preprocessedPlainText,
+                                     tweetsDatabase):
+        """Select and returns a list of tweets that encode the given
+        preprocessedPlainText, and a list of containing the quantity
+        of bits encoded in each tweet. It selects Tweets among those provided
+        by the given tweetsDatabase."""
+        db = tweetsDatabase
+        dim = db.getDimensionOfFeatureVector()
+        ppt = BitOver(preprocessedPlainText)
+        output = []
+        # for it in range(start=0, stop=len(ppt), step=dim):
+        it = 0
+        finished = False
+        while not finished:
+            itEnd = it + dim
+            featureVector = ppt.getAsInt(slice(it, itEnd))
+            quantityOfExtraBits = 0
+            # print("it:%d itEnd:%d => %s (%s)" % (it, itEnd, ppt[it:itEnd], featureVector))
+
+            if itEnd < len(ppt):
+                it += dim
             else:
-                break
-        K_ary_r=K_ary_r[n_lst:len(K_ary_r)]
-        print(K_ary_r)
+                quantityOfExtraBits = itEnd - len(ppt)
+                # output.append(db.getTweetWithFeatureVector(ppt.getAsInt(slice(it, itEnd))))
+                # print("last:%s" % str(output[-1]))
+                finished = True
 
-#************
-        #pt_len=0
-        #while pt_len<len(K_ary_r)*self.emd.K*self.emd.N:
-            #PT=input("type PT")
-            #pt_len=len(PT)*8
+            tweet = db.getTweetWithFeatureVector(featureVector)
+            if not tweet: raise BufferError("Could not find proper tweet for feature %s" % featureVector)
+            output.append(tweet)
+            if finished:
+                tweetEOF = db.getTweetWithFeatureVector(quantityOfExtraBits)
+                if not tweetEOF: raise BufferError("Could not find proper tweet for feature %s" % featureVector)
+                # print("last feature vector: %s" % ppt[it:itEnd])
+                # print("quantityOfExtraBits: %s" % quantityOfExtraBits)
+                output.append(tweetEOF)
+        # print("len(ppt):%d" % len(ppt))
+        return (output, [dim for i in range(len(output))])
 
-        #S_len=len(PT)
-        pt_size=len(K_ary_r)*self.emd.K*self.emd.N
-        PT=""
-        for i in range(pt_size):
-            PT+=str(random.getrandbits(1))
-        
-        #self.randomize(PT)
-        self.randomize(len(PT))
-        
-        self.secret_len=len(secret)
-        L_num=math.ceil(self.secret_len/self.emd.L) 
-        index=0
-        
-        CT=PT
-        
-        #print(CT)
-             
-        for i in range(len(K_ary_r)):
-            for j in range(self.emd.K):
-                CT=self.emd.embedd(CT,K_ary_r[i][j],self.s_seq[index]) #계속 s_seq에서 index error. PT가 너무 짧다..
-                index=index+1
-       
-        print("1: ",CT)
-        r_CT,self.last_n=self.emd.to_string_aes(CT) #이때 r_CT는 binary string이다...
-        return r_CT
+    def _parseTextAsListOfTweets(self, text):
+        """Parses given text and returns a list of Tweet instances,
+        as well as a list of quantity of bits encoded in each tweet."""
+        tweets = []
+        bits = []
 
-    def decrypt(self,CT): #CT는 binary string이다.
-        kd_list=[]
-        index=0
-        L_num=math.ceil(self.secret_len/self.emd.L)
-        for i in range(L_num):
-            kd_list.append([])
-            for j in range(self.emd.K):
-                kd_list[i].append(self.emd.extract(CT,self.s_seq[index])) #맨앞부터 나옴
-                index=index+1
-        
-        print(kd_list)
-        PT=self.emd.back(kd_list)
-        i=0
-        while int(PT[i])==0:
-            i=i+1
-        PT=PT[i:]
-        #f_PT=self.emd.to_string(PT)
-        #return f_PT
-        print("decrypt: ",PT)
-        return PT #걍 binary string을 return
-    
-    def write_on(self,CT,f_out):
-        try:
-            fp=open(f_out,"w",encoding="utf-8" )
-        except:
-            print("pyAES: unable to open output file -", f_out)
-            sys.exit()
-        fp.write(CT)
-        fp.close()
+        lines = text.split('\n')
 
-    def read_on(self,f_out):       
-        try:
-            fp=open(f_out,"r",encoding="utf-8" )
-        except:
-            print("pyAES: unable to open output file -", f_out)
-            sys.exit()
-        line=fp.readline()
-        fp.close()
-        return line
+        flag = 0
+        userId = ""
+        tweetId = ""
+        content = ""
+        start = "https://twitter.com/"
+        end = "/status/"
 
-    def padd_pt(self,PT): #input for aes must be a multiple of 16 in length
-        b_PT=bytes(PT,encoding="utf-8")
-        diff=len(b_PT)%16
-        diff=16-diff
-        PT="1"+PT #구분 위해서 PT앞에 무조건 1을 붙인다...즉 나중에는 첫1을 만날때까지 slice
-        for i in range(diff-1):
-            PT="0"+PT
-        return PT
+        for line in lines[5:]:
+            #print (line)
+            if flag == 0:
+                content = line
+            if flag == 1:
+                userId = line[line.index(start)+len(start):line.index(end)]
+                tweetId = line[line.rindex("/")+1:]
+            flag += 1
+            if flag == 3:
+                flag = 0
+                tweets.append(Tweet(userId, tweetId, content))
+                bits.append(4)
 
-    def remove_pad_pt(self,p_PT): #remove the padd
-        index=0
-        for i in range(len(p_PT)):
-            index=index+1
-        rp_PT=p_PT[index:]
-        return rp_PT
-    
-    def main(self):
-        import myhuffman
-        import AESCipher
-        import array
-        #huffman encoding
-        original_file = 'F:\cipher_python\input.txt'
-        enc=myhuffman.Encoder(original_file)
-        c_str,c_length,root=enc.get_compstr()
-        print(c_str)
-        #cipher start
-        N=int(input("type N: "))
-        K=int(input("type K: "))
-        emd=EMD(N,K)
-        
-        secret_blst=[]
-        for x in c_str:
-            secret_blst.append(x)
+        return (tweets, bits)  # todo Stuart
 
-        secret=to_binary(secret_blst,8,8) #secret은 이미 binary string으로 transform
-        
-        sec_len=len(secret)
-        #pt_size=math.ceil(sec_len/emd.L)*N
-        
-        pt_size=(math.ceil(sec_len/emd.L))*(emd.K)*emd.N
-        
-        print(str(pt_size)," ",str(emd.L)," ")
-        key_1=input("type key_1: ")
-        key_2=input("type key_2: ")
+    def _recoverDataFromTweetsList(self, listOfTweets, listOfBitsPerTweet):
+        """Interprets the given list of Tweets. Returns the data hidden in the
+        Tweets. It reverses the process of
+        _selectTweetsListForEncoding(preprocessedPlainText)"""
+        tweetQuantity = len(listOfTweets)
+        if tweetQuantity != len(listOfBitsPerTweet):
+            raise ValueError("Both lists should have the same length")
+        totalBitQuantity = 0
+        for quantity in listOfBitsPerTweet:
+            totalBitQuantity += quantity
+        # print(totalBitQuantity - listOfTweets[-1].getFeatureVector())
+        # print((totalBitQuantity - listOfTweets[-1].getFeatureVector()) / 8)
+        # print(math.ceil((totalBitQuantity - listOfTweets[-1].getFeatureVector()) / 8))
+        outputData = bytearray([0] * math.ceil(
+            (totalBitQuantity
+             - listOfTweets[-1].getFeatureVector()  # the last tweet tells us how much bits from the last but one bit are to be removed
+             - listOfBitsPerTweet[-1]) / 8))  # the last tweet does not carry any data
+        # print(len(outputData))
+        output = BitOver(outputData)
+        outputIterator = 0
 
-        key_1=_pad(key_1,pt_size)
-        key_2=_pad(key_2,emd.N)
-        
-        
-        #PT=Random.new().read(pt_size)
-        #PT=''.join(random.choice(string.ascii_letters) for i in range(math.ceil(pt_size/8)))
-        c=Cipher(key_1,key_2,emd)
-        print("secret: ",secret)
-        CT,last_n=c.encrypt(secret) #CT는 binary string, PT또한 binary string이다.(01010001...)
-          
-        key_3=input("type key for aes: ")
-        blocksize=input("type blocksize of AES: ")
-
-        aes=AESCipher.AESCipher(key_3,blocksize)
-        aes_CT=aes.encrypt(CT)
-        aes_PT=aes.decrypt(aes_CT) 
-        
-        if aes_PT==CT:
-            print(aes_PT)
-            print("first sucess") 
- 
-        #aes_PT=to_binary(bytes(aes_PT,"utf-8"),7)
-        print(last_n)
-        b_data=to_binary(bytes(aes_PT,"utf-8"),7,last_n)
-        print("2:",b_data)
-        result=c.decrypt(b_data) #binary string을 return 한다
-        #result=c.decrypt(CT)
-        
-        #print(result)
-        if result==secret:
-            print(result)
-            print("second sucesss")
-        
-        #return result
-
-        #huffman uncompress
-        c_arr,temp=back(result,8)
-        tame=0
-        for x in c_arr:
-            if x==0:
-                tame+=1
+        lastButTwoData = bytearray([0] * math.ceil(listOfBitsPerTweet[-2] / 8))
+        lastButTwo = BitOver(lastButTwoData)
+        lastButTwoDimension = 0
+        for tweetIndex, (tweet, dimension) in enumerate(zip(listOfTweets, listOfBitsPerTweet)):
+            if tweetIndex == tweetQuantity - 1:  # if last tweet
+                bitsToDelete = tweet.getFeatureVector()
+                # bitsToDelete = output.getAsInt(slice(outputIterator,
+                                                     # outputIterator+dimension))
+                # print("bitsToDelete: %d" % bitsToDelete)
+                # output[outputIterator:outputIterator+bitsToDelete] = []
+                output[outputIterator:outputIterator+dimension-bitsToDelete] = featureVector
             else:
-                break
-        c_arr=c_arr[tame:]
-        c_arr=array.array('B',c_arr)
-        print(c_arr)
-        
-        dec=myhuffman.Decoder(c_arr,c_length,root)
-        uc_str=dec.decode_as()
-            
-        #rev=myhuffman.Reverser(enc.code_map)
-        #uncp_s=rev.reverse(result)
-        #print(uncp_s)
+                featureVector = tweet.getFeatureVector()
+                if tweetIndex == tweetQuantity - 2:  # if last but one tweet
+                    lastButTwo[0:dimension] = featureVector
+                    lastButTwoDimension = dimension
+                else:
+                    # print("%d: %d bits in tweet %s" % (tweetIndex, dimension, tweet))
+                    # output.writeInt(outputIterator, featureVector, dimension)
+                    output[outputIterator:outputIterator+dimension] = featureVector
+                    outputIterator += dimension
 
-        return uc_str
-
-############
-    
-#def preprocess(original_file):
-def preprocess(original_file,key_1,key_2,key_3,N,K,blocksize):
-        #huffman encoding
-        #original_file = 'H:\cipher_python\input.txt'
-        enc=myhuffman.Encoder(original_file)
-        c_str,c_length,root=enc.get_compstr()
+        return outputData
 
 
-        #N=int(input("type N: "))
-        #K=int(input("type K: "))
-        emd=EMD(N,K)
-        
-        secret_blst=[]
-        for x in c_str:
-            secret_blst.append(x)
+class TestCipher(unittest.TestCase):
+    def setUp(self):
+        self.cipher = Cipher()
+        self.pt = "plainText : Hello World!"
+        self.key = "password"
+        self.ppt = bytearray("preprocessedPlainText: 101010001110101", "UTF-8")
 
-        secret=to_binary(secret_blst,8,8) #secret은 이미 binary string으로 transform
-        sec_len=len(secret)
-        pt_size=(math.ceil(sec_len/emd.L))*(emd.K)*emd.N
+    def test_preprocessing(self):
+        self.assertEqual(self.pt,
+                         self.cipher._reversePlainTextPreprocessing
+                         (self.cipher._preprocessPlainText(self.pt, self.key),
+                          self.key))
 
-        #key_1=input("type key_1: ")
-        #key_2=input("type key_2: ")
+    def test_selectTweetsListForEncoding(self):
+        tweetsDatabase = MockDatabase()
+        listOfTweets, listOfBitsPerTweet = self.cipher._selectTweetsListForEncoding(self.ppt, tweetsDatabase)
+        recoveredData = self.cipher._recoverDataFromTweetsList(listOfTweets, listOfBitsPerTweet)
+        self.assertListEqual(BitOver(self.ppt)[:], BitOver(recoveredData)[:])
+        self.assertListEqual(BitOver(self.ppt)[-8:], BitOver(recoveredData)[-8:])
+        self.assertEqual(self.ppt, recoveredData)
 
-        key_1=_pad(key_1,pt_size)
-        key_2=_pad(key_2,emd.N)
-        c=Cipher(key_1,key_2,emd)
-        
-        print("secret: ",secret)
-        CT=c.encrypt(secret) #CT는 binary string, PT또한 binary string이다.(01010001...)
+    def test_encodeAndDecode(self):
+        pass  # todo
 
-        #key_3=input("type key for aes: ")
-        #blocksize=input("type blocksize of AES: ")
-        
-        aes=AESCipher.AESCipher(key_3,blocksize)
-        aes_CT=aes.encrypt(CT)
+    def test__parseTextAsListOfTweets(self):
+        pass  # todo
 
-        #return key_1,key_2,key_3,aes_CT,c_length,root,blocksize,N,K,last_n,c.secret_len
-        return aes_CT,emd,c,aes,c_length,root #aes_CT는 byte array이다
-
-#def reverse_preprocess(aes_CT,key_1,key_2,key_3,c_length,root,N,K,blocksize,last_n,secret_len):
-def reverse_preprocess(aes_CT,emd,c,aes,c_length,root):
-
-        #aes=AESCipher.AESCipher(key_3,blocksize)
-        aes_PT=aes.decrypt(aes_CT) 
-
-        #emd=EMD(N,K)
-        #c=Cipher(key_1,key_2,emd)
-        b_data=to_binary(bytes(aes_PT,"utf-8"),7,c.last_n)
-
-        c.randomize(len(b_data))
-        result=c.decrypt(b_data) #binary string을 return 한다 
-
-        #huffman uncompress
-        c_arr,temp=back(result,8)
-        tame=0
-        for x in c_arr:
-            if x==0:
-                tame+=1
-            else:
-                break
-        c_arr=c_arr[tame:]
-        c_arr=array.array('B',c_arr)
-        dec=myhuffman.Decoder(c_arr,c_length,root)
-        uc_str=dec.decode_as()
-
-        return uc_str
-
-def main():
-    original_file=input("type original_file: ")
-    N=int(input("type N: "))
-    K=int(input("type K: "))
-    key_1=input("type key_1: ")
-    key_2=input("type key_2: ")
-    key_3=input("type key for aes: ")
-    blocksize=input("type blocksize of AES: ")
-    aes_CT,emd,c,aes,c_length,root=preprocess(original_file,key_1,key_2,key_3,N,K,blocksize)
-    uc_str=reverse_preprocess(aes_CT,emd,c,aes,c_length,root)
-    print(uc_str)
+if __name__ == '__main__':
+    unittest.main()

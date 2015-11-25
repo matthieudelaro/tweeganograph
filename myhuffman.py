@@ -12,15 +12,15 @@ class HuffmanNode(object):
         self.p = parent
         self.c = ch
         self.fq = fq
-        
+
     def __repr__(self):
         if HuffmanNode.recurPrint:
-            lnode = self.L if self.L else '#'  
-            rnode = self.R if self.R else '#'        
+            lnode = self.L if self.L else '#'
+            rnode = self.R if self.R else '#'
             return ''.join( ('(%s:%d)'%(self.c, self.fq), str(lnode), str(rnode) ) )
         else:
             return '(%s:%d)'%(self.c, self.fq)
-    
+
     def __cmp__(self, other):
         if not isinstance(other, HuffmanNode):
             return super(HuffmanNode, self).__cmp__(other)
@@ -34,8 +34,8 @@ def _pop_first_two_nodes(nodes):
     else:
         #print "[popFirstTwoNodes] nodes's length <= 1"
         return nodes[0], None
-        
-def _build_tree(nodes):    
+
+def _build_tree(nodes):
     nodes.sort(key=operator.attrgetter('fq'))
     while(True):
         first, second = _pop_first_two_nodes(nodes)
@@ -54,7 +54,7 @@ def _gen_huffman_code(node, dict_codes, buffer_stack=[]):
     buffer_stack.append('0')
     _gen_huffman_code(node.L, dict_codes, buffer_stack)
     buffer_stack.pop()
-    
+
     buffer_stack.append('1')
     _gen_huffman_code(node.R, dict_codes, buffer_stack)
     buffer_stack.pop()
@@ -87,7 +87,7 @@ class Encoder(object):
             self.array_codes, self.code_length = self._encode()
             #self.array_codes, self.compress_str = self._convert()
     long_str = property(__get_long_str, __set_long_str)
-    
+
     def _get_tree_root(self):
         d = _cal_freq(self.long_str)
         return _build_tree([HuffmanNode(ch=ch, fq=int(fq)) for ch, fq in d.items()])
@@ -96,13 +96,13 @@ class Encoder(object):
         a_dict={}
         _gen_huffman_code(self.root, a_dict)
         return a_dict
-        
+
     def _encode(self):
         array_codes = array.array('B')
         code_length = 0
         buff, length = 0, 0
         for ch in self.long_str: #long_str는 bytes이다
-            code = self.code_map[ch]   #map     
+            code = self.code_map[ch]   #map
             for bit in list(code):
                 if bit=='1':
                     buff = (buff << 1) | 0x01 #즉 마지막에 1추가 10<<1|1 -->101
@@ -118,7 +118,7 @@ class Encoder(object):
         #즉 array_code가 compress된 결과이다.
         if length != 0: #즉 나머지 있는 경우 즉 8로 나뭐지지 않는 경우를 array_code에 마저 붙임
             array_codes.extend([buff << (MAX_BITS-length)])
-            
+
         return array_codes, code_length
 
     def _convert(self):
@@ -135,11 +135,11 @@ class Encoder(object):
         compress_str=compress_byte.decode()
         return self.code_map,compress_str
 
-    def encode(self, filename):
-        fp = open(filename, 'rb')
-        self.long_str = fp.read() #_set_long_str이 불러지고, 이를 통해 _convert가 불러진다. 그 결과 compress_str,array_codes가 set
-        fp.close()
-    
+    def encode(self, target):
+        #fp = open(filename, 'rb')
+        #self.long_str = fp.read() #_set_long_str이 불러지고, 이를 통해 _convert가 불러진다. 그 결과 compress_str,array_codes가 set
+        #fp.close()
+        self.long_str=target.encode('UTF-8')
 
 
     #def write(self, filename):
@@ -172,13 +172,13 @@ class Decoder(object):
 
     def _decode(self):
         string_buf = []
-        total_length = 0    
+        total_length = 0
         node = self.root
         for code in self.array_codes: #compress된 str를 하나씩 가져온다
             buf_length = 0
             while (buf_length < MAX_BITS and total_length != self.code_length):
                 buf_length += 1
-                total_length += 1            
+                total_length += 1
                 if code >> (MAX_BITS - buf_length) & 1:
                     node = node.R
                     if node.c:
@@ -193,18 +193,18 @@ class Decoder(object):
         #string_buf는 bytes임
         ###decode 하는 방향으로
         ##일단 결과 값은 맞게 나온다...
-        #return ''.join(string_buf)        
+        #return ''.join(string_buf)
         return string_buf
-    
+
     def read(self, filename):
         fp = open(filename, 'rb')
-        unpickled_root,length,array_codes = marshal.load(fp)        
+        unpickled_root,length,array_codes = marshal.load(fp)
         self.root = pickle.loads(unpickled_root)
-        self.code_length = length        
+        self.code_length = length
         self.array_codes = array.array('B', array_codes)
         fp.close()
 
     def decode_as(self):
         decoded = (bytes(self._decode())).decode()
         return decoded
-    
+

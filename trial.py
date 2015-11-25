@@ -17,8 +17,8 @@ print('--------------------------')
 print('--------------------------')
 print('Status Object')
 mytimeline = api.user_timeline('xbox')
-for tweet in mytimeline:
-    print(tweet)
+# for tweet in mytimeline:
+    # print(tweet)
     # print (tweet.id, tweet.text)
 print ('--------------------------')
 
@@ -26,11 +26,18 @@ print ('--------------------------')
 srch = api.get_status(667523538945863681)
 print (srch.entities)
 
-#srch =tweepy.Cursor( api.search,q ='#xbox', lang = 'en').items(2500)
+srch =tweepy.Cursor( api.search,q ='#xbox', lang = 'en').items(2500)
 
-#csvFile = open('xbox.csv', 'a')
-##Use csv Writer
-#csvWriter = csv.writer(csvFile)
+csvFile = open('xbox2.csv', 'a')
+# Use csv Writer
+csvWriter = csv.writer(csvFile)
+x = 0
+for i in srch:
+    s = i.text
+    n = i.user.name
+    csvWriter.writerow(['**'+str(i.id), str(n.encode('UTF-8')), str(s.encode('UTF-8')), s.count('@'), s.count('#'), len(s)])
+    x+=1
+
 #x = 0
 #for i in srch:
     #s = i.text
