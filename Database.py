@@ -4,7 +4,7 @@
 
 import unittest
 from Tweet import Tweet
-import tweepy
+#import tweepy
 import csv
 
 
@@ -128,24 +128,9 @@ class TweetDatabase(AbstractDatabase):
             reader = csv.reader(csvFile)
             x = 0
             for row in reader:
-                feat1 = 0
-                feat2 = 0
-                feat3 = 0
-                feat4 = 0
-
-                if (int(row[3])>=trsh1):
-                    feat1 = 1
-                if (int(row[4])>=trsh2):
-                    feat2 = 1
-                if (int(row[5])>=trsh3):
-                    feat3 = 1
-                if (int(row[6])>=trsh4):
-                    feat4 = 1
-
-                index = feat1 + 2*feat2 + 4*feat3 + 8*feat4
-
                 tw =Tweet(row[1],row[0][2:],row[2])
-                tw._featureVector = index
+                #tw._featureVector = index
+                index = tw._featureVector
                 self._tweets[index].append(tw)
                 x+=1
                 if (x>=2500):

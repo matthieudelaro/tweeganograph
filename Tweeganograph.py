@@ -1,4 +1,4 @@
-# This file describs the main user interface to encode/decode.
+# This file describes the main user interface to encode/decode.
 # It has been designed for Python 3.5. Please upgrade if you
 # are using Python 2.X version.
 
@@ -21,11 +21,11 @@ def main(argv):
     cipher = Cipher()
     print()
     print()
-    spam = cipher.encode("your plaintext", "awesome password", "topic", db)
+    spam,key = cipher.encode("your majesty the quee", "awesome password", "topic", db)
     print("Here is your spam:")
     print(spam)
 
-    print(cipher.decode(spam,"awesome password"))
+    print(cipher.decode(spam,key))
 
 if __name__ == "__main__":
     main(sys.argv[1:])

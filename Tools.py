@@ -36,7 +36,7 @@ def back(secret,n):
     lst.reverse()
     return lst,diff
 
-def to_binary(b_data_l,n,last_n): #b_data는 bytes임
+def to_binary(b_data_l,n,last_n): #b_dataëŠ” bytesìž„
         b_data=""
         for i in range(len(b_data_l)):
             temp="{0:b}".format(b_data_l[len(b_data_l)-1-i])
@@ -45,7 +45,7 @@ def to_binary(b_data_l,n,last_n): #b_data는 bytes임
                 temp='0'*diff+temp
             else:
                 diff=last_n-len(temp)
-                print("in...:",str(diff))
+                #print("in...:",str(diff))
                 temp='0'*diff+temp
             b_data=temp+b_data
         return b_data
@@ -76,7 +76,7 @@ class EMD:
         return b_data
 
 #most recent version
-    def to_string(self,s_data):#for secret,먼저 zero padding지우고 그다음 변환
+    def to_string(self,s_data):#for secret,ë¨¼ì € zero paddingì§€ìš°ê³  ê·¸ë‹¤ì�Œ ë³€í™˜
         t_len=len(s_data)
 
         index=0
@@ -115,8 +115,8 @@ class EMD:
             b_lst.append(val)
 
 
-        b_data=bytes(b_lst) #list이므로
-        print(b_data)
+        b_data=bytes(b_lst) #listì�´ë¯€ë¡œ
+        #print(b_data)
     #   try:
             #r_data=b_data.decode()
         #except Exception as e:
@@ -128,7 +128,7 @@ class EMD:
 
     def to_string_aes(self,data):
         lst,diff=back(data,7)
-        print(lst)
+        #print(lst)
         r_data=(bytes(lst)).decode()
         return r_data,diff
 
@@ -136,7 +136,7 @@ class EMD:
         temp=bytes(r_data,"utf-8")
 
 
-    def transform(self,s_data): #s_data는 binary string임
+    def transform(self,s_data): #s_dataëŠ” binary stringìž„
         K_ary_r=[]
         count=1
         temp=0
@@ -144,9 +144,9 @@ class EMD:
         n_digit=0
         #form_b="{0:0"+str(len(s_data)*8)+"b}"
 
-        #bitcode=self.to_binary(s_data) #num_lst가 생성*****
-        bitcode=s_data #이미 binary string임
-        print("transform:",bitcode)
+        #bitcode=self.to_binary(s_data) #num_lstê°€ ìƒ�ì„±*****
+        bitcode=s_data #ì�´ë¯¸ binary stringìž„
+        #print("transform:",bitcode)
         #bitcode=''.join(["{0:b}".format(x) for x in binascii.a2b_base64(s_data)])
         #bitcode=''.join(["{0:b}".format(x) for x in bytes(s_data)])
         b_size=len(bitcode)
@@ -199,7 +199,7 @@ class EMD:
         #print(K_ary_r)
         return K_ary_r
 
-    #k-ary-r을 01 string으로 back -->이후에 to_string 이루어져야 완벽한 복구
+    #k-ary-rì�„ 01 stringìœ¼ë¡œ back -->ì�´í›„ì—� to_string ì�´ë£¨ì–´ì ¸ì•¼ ì™„ë²½í•œ ë³µêµ¬
     def back(self,K_ary_r):
         m_data=""
         #k_len=len(K_ary_r) #new
@@ -211,7 +211,7 @@ class EMD:
                 val+=lst[i]*pow(self.ary,self.K-1-i)
             bits_v="{0:b}".format(val)
             b_len=len(bits_v)
-            #zero-padding -->맨앞의 경우 to_string시 제거된다.
+            #zero-padding -->ë§¨ì•žì�˜ ê²½ìš° to_stringì‹œ ì œê±°ë�œë‹¤.
 
             #if trace!=0: #new
             for i in range(self.L-b_len):
@@ -245,7 +245,7 @@ class EMD:
         r_b="{0:b}".format(value)
         return r_b
 
-    def embedd(self,data,c_digit,seq):#data는 binary string이다.(이미 encrypt에서 to_binary거침)
+    def embedd(self,data,c_digit,seq):#dataëŠ” binary stringì�´ë‹¤.(ì�´ë¯¸ encryptì—�ì„œ to_binaryê±°ì¹¨)
         d=0
         value=0
         bitcode=data
@@ -282,7 +282,7 @@ class EMD:
         value=value%self.ary
         return value
 
-    def extract(self,data,seq): #data는 binary string이고 한 digit을 return
+    def extract(self,data,seq): #dataëŠ” binary stringì�´ê³  í•œ digitì�„ return
         value=0
         for i in range(self.N):
             value+=int(data[len(data)-1-seq[i]])*(pow(2,seq[i]))
@@ -400,7 +400,7 @@ class Cipher:
             self.s_seq.append(rc4_2.prng(rc4_2.S_len,self.emd.ary,self.emd.N,0,self.f_seq))
 
 
-    def encrypt(self,secret): #secret은 binary string임
+    def encrypt(self,secret): #secretì�€ binary stringìž„
         #S_len=len(PT)
         #self.randomize(S_len)
         K_ary_r=self.emd.transform(secret)
@@ -411,7 +411,7 @@ class Cipher:
             else:
                 break
         K_ary_r=K_ary_r[n_lst:len(K_ary_r)]
-        print(K_ary_r)
+        #print(K_ary_r)
 
 #************
         #pt_len=0
@@ -438,24 +438,24 @@ class Cipher:
 
         for i in range(len(K_ary_r)):
             for j in range(self.emd.K):
-                CT=self.emd.embedd(CT,K_ary_r[i][j],self.s_seq[index]) #계속 s_seq에서 index error. PT가 너무 짧다..
+                CT=self.emd.embedd(CT,K_ary_r[i][j],self.s_seq[index]) #ê³„ì†� s_seqì—�ì„œ index error. PTê°€ ë„ˆë¬´ ì§§ë‹¤..
                 index=index+1
 
-        print("1: ",CT)
-        r_CT,self.last_n=self.emd.to_string_aes(CT) #이때 r_CT는 binary string이다...
+        #print("1: ",CT)
+        r_CT,self.last_n=self.emd.to_string_aes(CT) #ì�´ë•Œ r_CTëŠ” binary stringì�´ë‹¤...
         return r_CT
 
-    def decrypt(self,CT): #CT는 binary string이다.
+    def decrypt(self,CT): #CTëŠ” binary stringì�´ë‹¤.
         kd_list=[]
         index=0
         L_num=math.ceil(self.secret_len/self.emd.L)
         for i in range(L_num):
             kd_list.append([])
             for j in range(self.emd.K):
-                kd_list[i].append(self.emd.extract(CT,self.s_seq[index])) #맨앞부터 나옴
+                kd_list[i].append(self.emd.extract(CT,self.s_seq[index])) #ë§¨ì•žë¶€í„° ë‚˜ì˜´
                 index=index+1
 
-        print(kd_list)
+        #print(kd_list)
         PT=self.emd.back(kd_list)
         i=0
         while int(PT[i])==0:
@@ -463,8 +463,8 @@ class Cipher:
         PT=PT[i:]
         #f_PT=self.emd.to_string(PT)
         #return f_PT
-        print("decrypt: ",PT)
-        return PT #걍 binary string을 return
+        #print("decrypt: ",PT)
+        return PT #ê±� binary stringì�„ return
 
     def write_on(self,CT,f_out):
         try:
@@ -489,7 +489,7 @@ class Cipher:
         b_PT=bytes(PT,encoding="utf-8")
         diff=len(b_PT)%16
         diff=16-diff
-        PT="1"+PT #구분 위해서 PT앞에 무조건 1을 붙인다...즉 나중에는 첫1을 만날때까지 slice
+        PT="1"+PT #êµ¬ë¶„ ìœ„í•´ì„œ PTì•žì—� ë¬´ì¡°ê±´ 1ì�„ ë¶™ì�¸ë‹¤...ì¦‰ ë‚˜ì¤‘ì—�ëŠ” ì²«1ì�„ ë§Œë‚ ë•Œê¹Œì§€ slice
         for i in range(diff-1):
             PT="0"+PT
         return PT
@@ -519,7 +519,7 @@ class Cipher:
         for x in c_str:
             secret_blst.append(x)
 
-        secret=to_binary(secret_blst,8,8) #secret은 이미 binary string으로 transform
+        secret=to_binary(secret_blst,8,8) #secretì�€ ì�´ë¯¸ binary stringìœ¼ë¡œ transform
 
         sec_len=len(secret)
         #pt_size=math.ceil(sec_len/emd.L)*N
@@ -537,8 +537,8 @@ class Cipher:
         #PT=Random.new().read(pt_size)
         #PT=''.join(random.choice(string.ascii_letters) for i in range(math.ceil(pt_size/8)))
         c=Cipher(key_1,key_2,emd)
-        print("secret: ",secret)
-        CT,last_n=c.encrypt(secret) #CT는 binary string, PT또한 binary string이다.(01010001...)
+        #print("secret: ",secret)
+        CT,last_n=c.encrypt(secret) #CTëŠ” binary string, PTë˜�í•œ binary stringì�´ë‹¤.(01010001...)
 
         key_3=input("type key for aes: ")
         blocksize=input("type blocksize of AES: ")
@@ -547,21 +547,21 @@ class Cipher:
         aes_CT=aes.encrypt(CT)
         aes_PT=aes.decrypt(aes_CT)
 
-        if aes_PT==CT:
-            print(aes_PT)
-            print("first sucess")
+        #if aes_PT==CT:
+        #    print(aes_PT)
+        #    print("first sucess")
 
         #aes_PT=to_binary(bytes(aes_PT,"utf-8"),7)
-        print(last_n)
+        #print(last_n)
         b_data=to_binary(bytes(aes_PT,"utf-8"),7,last_n)
-        print("2:",b_data)
-        result=c.decrypt(b_data) #binary string을 return 한다
+        #print("2:",b_data)
+        result=c.decrypt(b_data) #binary stringì�„ return í•œë‹¤
         #result=c.decrypt(CT)
 
         #print(result)
-        if result==secret:
-            print(result)
-            print("second sucesss")
+        #if result==secret:
+        #    print(result)
+        #    print("second sucesss")
 
         #return result
 
@@ -575,7 +575,7 @@ class Cipher:
                 break
         c_arr=c_arr[tame:]
         c_arr=array.array('B',c_arr)
-        print(c_arr)
+        #print(c_arr)
 
         dec=myhuffman.Decoder(c_arr,c_length,root)
         uc_str=dec.decode_as()
@@ -587,10 +587,13 @@ class Cipher:
         return uc_str
 
 ############
+#/** Used in other programs
 
 #def preprocess(original_file):
 def preprocess(target_secret,key_1,key_2,key_3,N,K,blocksize):
         #huffman encoding
+    #returns 
+        
         #original_file = 'H:\cipher_python\input.txt'
         enc=myhuffman.Encoder(target_secret)
         c_str,c_length,root=enc.get_compstr()
@@ -604,7 +607,7 @@ def preprocess(target_secret,key_1,key_2,key_3,N,K,blocksize):
         for x in c_str:
             secret_blst.append(x)
 
-        secret=to_binary(secret_blst,8,8) #secret은 이미 binary string으로 transform
+        secret=to_binary(secret_blst,8,8) #secretì�€ ì�´ë¯¸ binary stringìœ¼ë¡œ transform
         sec_len=len(secret)
         pt_size=(math.ceil(sec_len/emd.L))*(emd.K)*emd.N
 
@@ -616,7 +619,7 @@ def preprocess(target_secret,key_1,key_2,key_3,N,K,blocksize):
         c=Cipher(key_1,key_2,emd)
 
         # print("secret: ",secret)
-        CT=c.encrypt(secret) #CT는 binary string, PT또한 binary string이다.(01010001...)
+        CT=c.encrypt(secret) #CTëŠ” binary string, PTë˜�í•œ binary stringì�´ë‹¤.(01010001...)
 
         #key_3=input("type key for aes: ")
         #blocksize=input("type blocksize of AES: ")
@@ -630,7 +633,7 @@ def preprocess(target_secret,key_1,key_2,key_3,N,K,blocksize):
         # length whatever
         # whatever
         # aes_CT]
-        return aes_CT,emd,c,aes,c_length,root #aes_CT는 byte array이다
+        return aes_CT,emd,c,aes,c_length,root #aes_CTëŠ” byte arrayì�´ë‹¤
 
 #def reverse_preprocess(aes_CT,key_1,key_2,key_3,c_length,root,N,K,blocksize,last_n,secret_len):
 def reverse_preprocess(aes_CT,emd,c,aes,c_length,root):
@@ -643,7 +646,7 @@ def reverse_preprocess(aes_CT,emd,c,aes,c_length,root):
         b_data=to_binary(bytes(aes_PT,"utf-8"),7,c.last_n)
 
         c.randomize(len(b_data))
-        result=c.decrypt(b_data) #binary string을 return 한다
+        result=c.decrypt(b_data) #binary stringì�„ return í•œë‹¤
 
         #huffman uncompress
         c_arr,temp=back(result,8)
@@ -661,7 +664,7 @@ def reverse_preprocess(aes_CT,emd,c,aes,c_length,root):
         return uc_str
 
 def main():
-    target_secret=""
+    target_secret="hgsdh"
     N=int(input("type N: "))
     K=int(input("type K: "))
     key_1=input("type key_1: ")
@@ -671,3 +674,5 @@ def main():
     aes_CT,emd,c,aes,c_length,root=preprocess(target_secret,key_1,key_2,key_3,N,K,blocksize)
     uc_str=reverse_preprocess(aes_CT,emd,c,aes,c_length,root)
     print(uc_str)
+
+#main()

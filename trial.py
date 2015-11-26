@@ -28,7 +28,7 @@ print (srch.entities)
 
 srch =tweepy.Cursor( api.search,q ='#xbox', lang = 'en').items(2500)
 
-csvFile = open('xbox2.csv', 'a')
+csvFile = open('xbox5.csv', 'a')
 # Use csv Writer
 csvWriter = csv.writer(csvFile)
 x = 0
