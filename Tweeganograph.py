@@ -21,7 +21,7 @@ def main(argv):
     cipher = Cipher()
     print()
     print()
-    spam,key = cipher.encode("your majesty the quee", "awesome password", "topic", db)
+    spam,key = cipher.encode("Your majesty the quee", "awesome password", "topic", db)
     print("Here is your spam:")
     print(spam)
 

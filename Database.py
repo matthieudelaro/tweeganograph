@@ -69,7 +69,7 @@ class MockDatabase(AbstractDatabase):
 
 
 class TweetDatabase(AbstractDatabase):
-    defaultDimensionOfFeatureVector = 4
+    defaultDimensionOfFeatureVector = 5
     defaultQuantityOfTweetsPerFeatureVector = 50
 
     def __init__(self):
@@ -78,6 +78,8 @@ class TweetDatabase(AbstractDatabase):
                         for featureVector
                         in range(2**self._dimensionOfFeatureVector)]
         self.loadTweets()
+        #for featureVector in self._tweets:
+        #    print (len(featureVector))
 
         #for featureVector in range(len(self._tweets)):
         #    self._tweets[featureVector] = [Tweet("pseudo%s_%s" % (featureVector, x), "id%s_%s" % (featureVector, x), "Hello content %s_%s" % (featureVector, x)) for x in range(MockDatabase.defaultQuantityOfTweetsPerFeatureVector)]
@@ -102,6 +104,7 @@ class TweetDatabase(AbstractDatabase):
                 tweet = self._tweets[featureVector][self._tweetUsageCounters[featureVector]]
                 self._tweetUsageCounters[featureVector] += 1
                 return tweet
+            print("Not enough tweets")
         return None
 
     def getDimensionOfFeatureVector(self):
@@ -115,10 +118,7 @@ class TweetDatabase(AbstractDatabase):
             # number of hashtags, number of mentions] where a 1 or 0 is set
             # based on a comparison to some predefined thresholds (trsh1-4)
             #returns features to be used in later methods.
-            trsh1 = 1
-            trsh2 = 3
-            trsh3 = 128
-            trsh4 = 16
+
             #features = []
             #self.tweets
             #for f in range(16):
@@ -128,7 +128,10 @@ class TweetDatabase(AbstractDatabase):
             reader = csv.reader(csvFile)
             x = 0
             for row in reader:
-                tw =Tweet(row[1],row[0][2:],row[2])
+                n = row[1][2:-1]
+                #n2 = n.decode('UTF-8')
+                c = row[2][2:-1]
+                tw =Tweet(n,row[0][2:],c)
                 #tw._featureVector = index
                 index = tw._featureVector
                 self._tweets[index].append(tw)
@@ -139,10 +142,6 @@ class TweetDatabase(AbstractDatabase):
             #return features
 
 
-class TweetsDatabase(AbstractDatabase):
-    #  todo Stuart
-    #  todo? : methods to load tweets from file, ...
-    pass
 
 
 class TestMockDatabase(unittest.TestCase):

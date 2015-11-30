@@ -87,6 +87,8 @@ class Tweet:
             index += 4
         if (len(self._author)>=trsh4):
             index += 8
+        if(int(self._id[7]) %2 ==1):
+            index+= 16
 
         self._featureVector = index
 

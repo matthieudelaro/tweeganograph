@@ -138,7 +138,7 @@ class Cipher:
             if flag == 3:
                 flag = 0
                 tweets.append(Tweet(userId, tweetId, content))
-                bits.append(4)
+                bits.append(5)
         print ("number of Tweets")
         print (len(tweets))
         print()

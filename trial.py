@@ -12,7 +12,8 @@ print(api.me().name)
 user = api.get_user('obama') # any name of twitter account
 print('--------------------------')
 print('User Object')
-print(user.id, user.name, user.friends_count, user.location)
+print(user.id, user.name, user.friends_count, user.location,user.screen_name)
+print (user)
 print('--------------------------')
 print('--------------------------')
 print('Status Object')
@@ -24,19 +25,18 @@ print ('--------------------------')
 
 #print (tweet.mentions)
 srch = api.get_status(667523538945863681)
-print (srch.entities)
+#print (srch.entities)
 
-srch =tweepy.Cursor( api.search,q ='#xbox', lang = 'en').items(2500)
+#srch =tweepy.Cursor( api.search,q ='#xbox', lang = 'en').items(2500)
 
 csvFile = open('xbox5.csv', 'a')
 # Use csv Writer
 csvWriter = csv.writer(csvFile)
-x = 0
-for i in srch:
-    s = i.text
-    n = i.user.name
-    csvWriter.writerow(['**'+str(i.id), str(n.encode('UTF-8')), str(s.encode('UTF-8')), s.count('@'), s.count('#'), len(s)])
-    x+=1
+#x = 0
+#    s = i.text
+#    n = i.user.screen_name
+#    csvWriter.writerow(['**'+str(i.id), str(n.encode('UTF-8')), str(s.encode('UTF-8')), s.count('@'), s.count('#'), len(s)])
+#    x+=1
 
 #x = 0
 #for i in srch:
