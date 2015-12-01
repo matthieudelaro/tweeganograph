@@ -8,6 +8,8 @@ from Tweet import Tweet
 from Database import MockDatabase
 from BitIterator import BitOver
 import Tools
+import SpamWords
+import random
 
 
 class Cipher:
@@ -22,6 +24,9 @@ class Cipher:
         preprocessedPlainText,revKey = self._preprocessPlainText(plainText, key)
         listOfTweets, listOfBitsPerTweet = self._selectTweetsListForEncoding(preprocessedPlainText,
                                                          tweetsDatabase)
+
+        # self._generateMessage(topicOfTweets, listOfTweets)
+        print(self._generateMessage(topicOfTweets, listOfTweets))
 
         output = self._generateHeader(topicOfTweets)
         for tweet in listOfTweets:
@@ -38,11 +43,38 @@ class Cipher:
         #plainText = self._reversePlainTextPreprocessing(preprocessedPlainText, key)
         return plainText
 
+
     def _generateHeader(self, topicOfTweets):
         return """Dear customer,
             Click on this link to get a PROMO CODE and earn an Xbox One : http://virus.hack.ch.
             Here is what people say about this great article :
             """
+
+    def _generateMessage(self, topicOfTweets, listOfTweets):
+        tweetsText = ""
+        for tweet in listOfTweets:
+            tweetsText += "\n%s\n%s\n" % (tweet.getContent(), tweet.getUrl())
+
+        output = ""
+        output += "Dear customer,\n\n"
+        for item in random.sample(SpamWords.intro, 2):
+            output += item + " "
+        for item in random.sample(SpamWords.disclaimer, 1):
+            output += "\n" + item + " "
+        output += "\nClick on this link to get a PROMO CODE and get " \
+            + topicOfTweets
+        for item in random.sample(SpamWords.inciteAboutSender, 1):
+            output += "\n" + item + " " + " : http://COUPON.virus.hack.ch/PROMO-CODE\n"
+        for item in random.sample(SpamWords.conclusions, 2):
+            output += "\n" + item + " "
+        output += "\n"
+        for item in random.sample(SpamWords.incite, 3):
+            output += item + " "
+
+        output += "\n\nHere is what people say about it :\n"
+        output += tweetsText
+
+        return output
 
     def _preprocessPlainText(self, plainText, key):
         """Applies compression algorithm, encode with AES, ... and returns
@@ -57,7 +89,7 @@ class Cipher:
         #reverseC = c
         #reverseAES = aes
         #reverseC_length = leng
-        #reverseRoot = root        
+        #reverseRoot = root
         return out,(emd,c,aes,leng,root)
         #return bytearray(plainText, 'UTF-8')  # todo Juyasohn.
         # warning : take care of encoding issues (UTF-8, Latin1, ...)
@@ -139,9 +171,9 @@ class Cipher:
                 flag = 0
                 tweets.append(Tweet(userId, tweetId, content))
                 bits.append(5)
-        print ("number of Tweets")
-        print (len(tweets))
-        print()
+        # print ("number of Tweets")
+        # print (len(tweets))
+        # print()
         return (tweets, bits)  # todo Stuart
 
     def _recoverDataFromTweetsList(self, listOfTweets, listOfBitsPerTweet):
