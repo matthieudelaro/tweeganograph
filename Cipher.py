@@ -7,6 +7,7 @@ import math
 from Tweet import Tweet
 from Database import MockDatabase
 from BitIterator import BitOver
+import Tools
 
 
 class Cipher:
@@ -18,28 +19,29 @@ class Cipher:
         can convey the pre-processed plaintext, and renders them as text,
         which is returned. Given tweetDatabase contains all the Tweets that
         the cipher can use to encode the given plainText."""
-        preprocessedPlainText = self._preprocessPlainText(plainText, key)
+        preprocessedPlainText,revKey = self._preprocessPlainText(plainText, key)
         listOfTweets, listOfBitsPerTweet = self._selectTweetsListForEncoding(preprocessedPlainText,
                                                          tweetsDatabase)
 
         output = self._generateHeader(topicOfTweets)
         for tweet in listOfTweets:
             output += "\n%s\n%s\n" % (tweet.getContent(), tweet.getUrl())
-        return output
+        return output,revKey
 
     def decode(self, cipherText, key):
         """Decodes a string containing a list of tweets. Returns the decoded
         message."""
         listOfTweets, listOfBitsPerTweet = self._parseTextAsListOfTweets(cipherText)
         preprocessedPlainText = self._recoverDataFromTweetsList(listOfTweets, listOfBitsPerTweet)
-        plainText = self._reversePlainTextPreprocessing(preprocessedPlainText, key)
+        ct = preprocessedPlainText.decode('UTF-8')
+        plainText = self._reversePlainTextPreprocessing(bytes(ct,'UTF-8'), key)
+        #plainText = self._reversePlainTextPreprocessing(preprocessedPlainText, key)
         return plainText
 
     def _generateHeader(self, topicOfTweets):
         return """Dear customer,
             Click on this link to get a PROMO CODE and earn an Xbox One : http://virus.hack.ch.
             Here is what people say about this great article :
-
             """
 
     def _preprocessPlainText(self, plainText, key):
@@ -48,14 +50,28 @@ class Cipher:
         __reversePlainTextPreprocessing(plainText, key)."""
         # examples about bytes and bytearray: http://www.dotnetperls.com/bytes
         # some crypto module that seems nice: https://pypi.python.org/pypi/pycrypto
-        return bytearray(plainText, 'UTF-8')  # todo Juyasohn.
+        cipherText,emd,c,aes,leng,root = Tools.preprocess(plainText,key,key,key,3,5,16)
+        out = bytearray(plainText,'UTF-8')
+        out = cipherText
+        #reverseEmd = emd
+        #reverseC = c
+        #reverseAES = aes
+        #reverseC_length = leng
+        #reverseRoot = root        
+        return out,(emd,c,aes,leng,root)
+        #return bytearray(plainText, 'UTF-8')  # todo Juyasohn.
         # warning : take care of encoding issues (UTF-8, Latin1, ...)
+        # return Tools.preprocess(plainText, key, key, key, 3, 5, 16)
 
     def _reversePlainTextPreprocessing(self, preprocessedPlainText, key):
         """Reverses the process of _preprocessPlainText(plainText, key) by
         returning a string from the given bytes preprocessedPlainText."""
-        return preprocessedPlainText.decode("UTF-8")  # todo Juyasohn
+        emd,c,aes,leng,root = key
+        out = Tools.reverse_preprocess(preprocessedPlainText,emd,c,aes,leng,root)
+        return out
+        #return preprocessedPlainText.decode("UTF-8")  # todo Juyasohn
         # warning : take care of encoding issues (UTF-8, Latin1, ...)
+        # return
 
     def _selectTweetsListForEncoding(self, preprocessedPlainText,
                                      tweetsDatabase):
@@ -111,7 +127,7 @@ class Cipher:
         start = "https://twitter.com/"
         end = "/status/"
 
-        for line in lines[5:]:
+        for line in lines[4:]:
             #print (line)
             if flag == 0:
                 content = line
@@ -122,8 +138,10 @@ class Cipher:
             if flag == 3:
                 flag = 0
                 tweets.append(Tweet(userId, tweetId, content))
-                bits.append(4)
-
+                bits.append(5)
+        print ("number of Tweets")
+        print (len(tweets))
+        print()
         return (tweets, bits)  # todo Stuart
 
     def _recoverDataFromTweetsList(self, listOfTweets, listOfBitsPerTweet):
@@ -201,3 +219,4 @@ class TestCipher(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
