@@ -4,10 +4,11 @@
 
 import unittest
 import math
+import tweepy
 from Tweet import Tweet
 from Database import MockDatabase
 from BitIterator import BitOver
-import Tools
+#import Tools
 
 
 class Cipher:
@@ -50,26 +51,26 @@ class Cipher:
         __reversePlainTextPreprocessing(plainText, key)."""
         # examples about bytes and bytearray: http://www.dotnetperls.com/bytes
         # some crypto module that seems nice: https://pypi.python.org/pypi/pycrypto
-        cipherText,emd,c,aes,leng,root = Tools.preprocess(plainText,key,key,key,3,5,16)
-        out = bytearray(plainText,'UTF-8')
-        out = cipherText
-        #reverseEmd = emd
-        #reverseC = c
-        #reverseAES = aes
-        #reverseC_length = leng
-        #reverseRoot = root        
-        return out,(emd,c,aes,leng,root)
-        #return bytearray(plainText, 'UTF-8')  # todo Juyasohn.
+        #cipherText,emd,c,aes,leng,root = Tools.preprocess(plainText,key,key,key,3,5,16)
+        #out = bytearray(plainText,'UTF-8')
+        #out = cipherText
+        ##reverseEmd = emd
+        ##reverseC = c
+        ##reverseAES = aes
+        ##reverseC_length = leng
+        ##reverseRoot = root        
+        #return out,(emd,c,aes,leng,root)
+        return bytearray(plainText, 'UTF-8') ,(0,0,0,0,0)  # todo Juyasohn.
         # warning : take care of encoding issues (UTF-8, Latin1, ...)
         # return Tools.preprocess(plainText, key, key, key, 3, 5, 16)
 
     def _reversePlainTextPreprocessing(self, preprocessedPlainText, key):
         """Reverses the process of _preprocessPlainText(plainText, key) by
         returning a string from the given bytes preprocessedPlainText."""
-        emd,c,aes,leng,root = key
-        out = Tools.reverse_preprocess(preprocessedPlainText,emd,c,aes,leng,root)
-        return out
-        #return preprocessedPlainText.decode("UTF-8")  # todo Juyasohn
+        #emd,c,aes,leng,root = key
+        #out = Tools.reverse_preprocess(preprocessedPlainText,emd,c,aes,leng,root)
+        #return out
+        return preprocessedPlainText.decode("UTF-8")  # todo Juyasohn
         # warning : take care of encoding issues (UTF-8, Latin1, ...)
         # return
 
@@ -117,6 +118,13 @@ class Cipher:
         as well as a list of quantity of bits encoded in each tweet."""
         tweets = []
         bits = []
+        consumer_key = 'wsjOTj954n9aLO7KKrKVvX0ah'
+        consumer_secret = 'Dk4JzqEQDhfiKpUMmlOjDQvIXX4hpHBDaf2GwLmxZWWHPVklcg'
+        access_token = '3475513752-OcILSytFVDPoYOK0sXaaFQPxob5VqpCkeXPxLCw'
+        access_token_secret = 'y38aiyE0VD4Rr9D8ZL5l7sIAr1CyipoqsRkM1CRts3jO0'
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(access_token, access_token_secret)
+        api = tweepy.API(auth)        
 
         lines = text.split('\n')
 
@@ -137,11 +145,13 @@ class Cipher:
             flag += 1
             if flag == 3:
                 flag = 0
-                tweets.append(Tweet(userId, tweetId, content))
-                bits.append(5)
+                tweets.append(Tweet(userId, tweetId, content,0,0,1,api))
+                bits.append(6)
         print ("number of Tweets")
         print (len(tweets))
         print()
+        for t in tweets:
+            print(t._featureVector)
         return (tweets, bits)  # todo Stuart
 
     def _recoverDataFromTweetsList(self, listOfTweets, listOfBitsPerTweet):

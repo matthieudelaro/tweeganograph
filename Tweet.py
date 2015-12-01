@@ -2,22 +2,31 @@
 # It has been designed for Python 3.5. Please upgrade if you
 # are using Python 2.X version.
 
+import tweepy
 
 class Tweet:
     """Holds data about a tweet. It can be used to get tweets from Tweeter,
     to store them in some kind of database (serialization of the list of
     tweets ?), to get the features of the tweet to generate the text, ..."""
 
-    def __init__(self, author, id, content):
+    def __init__(self, author, id, content,follow,friend,parser,api):
         self._id = id
+        #if (id == "670766141728419840" or id == "670766173638819840"):
+        #    print (content)
         self._author = author
         self._content = content
-        self.inflateFeaturesFromContent()
+        self._friendCount = friend
+        self._followerCount = follow
+        self.inflateFeaturesFromContent(parser,api)
+        
+    #def __init__(self,author,id,content,
 
-    def inflateFeaturesFromContent(self):
+    def inflateFeaturesFromContent(self,parser,api):
         """Process the content of the tweet to compute some features."""
         self._computeHashtagsCount()
         self._computeMentionsCount()
+        if (parser == 1):
+            self._computeFriendsFollowers(api)
         self._computeFeaturesVector()
         return self
 
@@ -30,7 +39,7 @@ class Tweet:
         return self
 
     def __str__(self):
-        return "Tweet %s by %s : %s" % (self._id, self._author, self._content)
+        return "Tweet %s by %s : %s  +++++++ %s" % (self._id, self._author, self._content,self._featureVector)
 
     # simple getters/setters
     def getUrl(self):
@@ -70,25 +79,45 @@ class Tweet:
     def _computeLocalization(self, extraDataFromTweeter):
         #todo
         pass
+    
+    def _computeFriendsFollowers(self, api):
+                
+        
+        #s = api.get_user(self._author)
+        try:
+            t = api.get_status(self._id)
+            s = t.user
+            self._friendCount = s.friends_count
+            self._followerCount = s.followers_count
+        except:
+            return
+        return
 
     def _computeFeaturesVector(self):
-        trsh1 = 1  # mentions
-        trsh2 = 3  # hashtags
-        trsh3 = 128  # content
-        trsh4 = 16  # length of author name
+        #trsh1 = 1  # mentions (changing)
+        trsh2 = 4  # hashtags
+        trsh3 = 130  # content
+        trsh4 = 14  # length of author name
+        trsh5 = 33 #335 # number of followers
+        trsh6 = 33 #315 # number of friends
         index = 0
+        
 
-
-        if (self._mentionsCount>=trsh1):
-            index += 1
+        #if (self._mentionsCount>=trsh1): #using new feature, besides mentions
+        #    index += 1
+        
         if (self._hashtagsCount>=trsh2):
             index += 2
         if (len(self._content)>=trsh3):
             index += 4
         if (len(self._author)>=trsh4):
             index += 8
-        if(int(self._id[7]) %2 ==1):
-            index+= 16
+        if(int(self._id[7]) %2 ==1): #is 7th digit odd?
+            index+= 1
+        if((self._followerCount//10)>=trsh5):
+            index+=16
+        if((self._friendCount//10)>=trsh6):
+            index+=32
 
         self._featureVector = index
 
