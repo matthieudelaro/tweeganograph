@@ -74,7 +74,7 @@ class Encoder(object):
             if os.path.exists(filename_or_long_str):
                 self.encode(filename_or_long_str)
             else:
-                print('[Encoder] take \'%s\' as a string to be encoded.'% filename_or_long_str)
+                #print('[Encoder] take \'%s\' as a string to be encoded.'% filename_or_long_str)
                 self.long_str = filename_or_long_str
 
     def __get_long_str(self):
@@ -101,22 +101,22 @@ class Encoder(object):
         array_codes = array.array('B')
         code_length = 0
         buff, length = 0, 0
-        for ch in self.long_str: #long_str는 bytes이다
+        for ch in self.long_str: #long_strëŠ” bytesì�´ë‹¤
             code = self.code_map[ch]   #map
             for bit in list(code):
                 if bit=='1':
-                    buff = (buff << 1) | 0x01 #즉 마지막에 1추가 10<<1|1 -->101
+                    buff = (buff << 1) | 0x01 #ì¦‰ ë§ˆì§€ë§‰ì—� 1ì¶”ê°€ 10<<1|1 -->101
                 else: # bit == '0'
-                    buff = (buff << 1) #즉 마지막에 0추가 10<<1 -->100
-                length += 1 #한 bit가 추가되었으므로
-                if length == MAX_BITS: #8bit가 되면 arraycode에 추가
+                    buff = (buff << 1) #ì¦‰ ë§ˆì§€ë§‰ì—� 0ì¶”ê°€ 10<<1 -->100
+                length += 1 #í•œ bitê°€ ì¶”ê°€ë�˜ì—ˆìœ¼ë¯€ë¡œ
+                if length == MAX_BITS: #8bitê°€ ë�˜ë©´ arraycodeì—� ì¶”ê°€
                     array_codes.extend([buff])
-                    buff, length = 0, 0 #최기화
+                    buff, length = 0, 0 #ìµœê¸°í™”
 
-            code_length += len(code) #즉 code의 총 길이...
+            code_length += len(code) #ì¦‰ codeì�˜ ì´� ê¸¸ì�´...
 
-        #즉 array_code가 compress된 결과이다.
-        if length != 0: #즉 나머지 있는 경우 즉 8로 나뭐지지 않는 경우를 array_code에 마저 붙임
+        #ì¦‰ array_codeê°€ compressë�œ ê²°ê³¼ì�´ë‹¤.
+        if length != 0: #ì¦‰ ë‚˜ë¨¸ì§€ ìžˆëŠ” ê²½ìš° ì¦‰ 8ë¡œ ë‚˜ë­�ì§€ì§€ ì•ŠëŠ” ê²½ìš°ë¥¼ array_codeì—� ë§ˆì € ë¶™ìž„
             array_codes.extend([buff << (MAX_BITS-length)])
 
         return array_codes, code_length
@@ -137,7 +137,7 @@ class Encoder(object):
 
     def encode(self, target):
         #fp = open(filename, 'rb')
-        #self.long_str = fp.read() #_set_long_str이 불러지고, 이를 통해 _convert가 불러진다. 그 결과 compress_str,array_codes가 set
+        #self.long_str = fp.read() #_set_long_strì�´ ë¶ˆëŸ¬ì§€ê³ , ì�´ë¥¼ í†µí•´ _convertê°€ ë¶ˆëŸ¬ì§„ë‹¤. ê·¸ ê²°ê³¼ compress_str,array_codesê°€ set
         #fp.close()
         self.long_str=target.encode('UTF-8')
 
@@ -174,7 +174,7 @@ class Decoder(object):
         string_buf = []
         total_length = 0
         node = self.root
-        for code in self.array_codes: #compress된 str를 하나씩 가져온다
+        for code in self.array_codes: #compressë�œ strë¥¼ í•˜ë‚˜ì”© ê°€ì ¸ì˜¨ë‹¤
             buf_length = 0
             while (buf_length < MAX_BITS and total_length != self.code_length):
                 buf_length += 1
@@ -190,11 +190,18 @@ class Decoder(object):
                         string_buf.append(node.c)
                         node = self.root
         #print(string_buf)
-        #string_buf는 bytes임
-        ###decode 하는 방향으로
-        ##일단 결과 값은 맞게 나온다...
+        #string_bufëŠ” bytesìž„
+        ###decode í•˜ëŠ” ë°©í–¥ìœ¼ë¡œ
+        ##ì�¼ë‹¨ ê²°ê³¼ ê°’ì�€ ë§žê²Œ ë‚˜ì˜¨ë‹¤...
         #return ''.join(string_buf)
-        return string_buf
+        out = ""
+
+        for s in string_buf:
+            out = out+s
+        
+        #print(out)
+        return out
+        #return string_buf
 
     def read(self, filename):
         fp = open(filename, 'rb')
@@ -205,6 +212,8 @@ class Decoder(object):
         fp.close()
 
     def decode_as(self):
-        decoded = (bytes(self._decode())).decode()
-        return decoded
+        d = self._decode()
+        decoded = (bytes(d,'UTF-8')).decode()
+        return d
+        #return decoded
 
