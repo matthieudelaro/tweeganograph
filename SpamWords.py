@@ -28,7 +28,7 @@ inciteAboutSender = [
 ]
 
 conclusions = [
-    "100\% Satisfied",
+    "100% Satisfied",
     "One hundred percent guaranteed",
     "4U",
     "50% off",
