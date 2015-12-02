@@ -24,19 +24,35 @@ mytimeline = api.user_timeline('xbox')
 print ('--------------------------')
 
 #print (tweet.mentions)
-srch = api.get_status(667523538945863681)
+#srch = api.get_status(667523538945863681)
 #print (srch.entities)
 
-#srch =tweepy.Cursor( api.search,q ='#xbox', lang = 'en').items(2500)
+s = api.get_user('Treasa_Dekay')
+print (s.screen_name)
+print(s.followers_count)
+print(s.friends_count)
 
-csvFile = open('xbox5.csv', 'a')
+srch =tweepy.Cursor( api.search,q ='#xbox', lang = 'en').items(2600)
+#for i in srch:
+#    print (i.text + " " + i.user.screen_name)
+#    print (i.user.followers_count)
+#    print (i.user.friends_count)
+#    print (i.retweeted)
+    
+
+csvFile = open('xbox6.csv', 'a')
 # Use csv Writer
 csvWriter = csv.writer(csvFile)
-#x = 0
-#    s = i.text
-#    n = i.user.screen_name
-#    csvWriter.writerow(['**'+str(i.id), str(n.encode('UTF-8')), str(s.encode('UTF-8')), s.count('@'), s.count('#'), len(s)])
-#    x+=1
+x = 0
+for i in srch:
+    s = i.text
+    n = i.user.screen_name
+    csvWriter.writerow(['**'+str(i.id), str(n.encode('UTF-8')), str(s.encode('UTF-8')), s.count('@'), s.count('#'), len(s),i.user.followers_count,i.user.friends_count,i.retweeted])
+    x+=1
+    
+    
+csvFile.close()
+print (x)
 
 #x = 0
 #for i in srch:

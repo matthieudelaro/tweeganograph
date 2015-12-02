@@ -4,7 +4,7 @@
 
 import unittest
 from Tweet import Tweet
-#import tweepy
+import tweepy
 import csv
 
 
@@ -69,7 +69,7 @@ class MockDatabase(AbstractDatabase):
 
 
 class TweetDatabase(AbstractDatabase):
-    defaultDimensionOfFeatureVector = 5
+    defaultDimensionOfFeatureVector = 6
     defaultQuantityOfTweetsPerFeatureVector = 50
 
     def __init__(self):
@@ -123,21 +123,27 @@ class TweetDatabase(AbstractDatabase):
             #self.tweets
             #for f in range(16):
             #    features.append([])
+                        
 
-            csvFile = open('xboxData.csv')
+            csvFile = open('xbox6.csv')
             reader = csv.reader(csvFile)
             x = 0
             for row in reader:
                 n = row[1][2:-1]
                 #n2 = n.decode('UTF-8')
                 c = row[2][2:-1]
-                tw =Tweet(n,row[0][2:],c)
+                tw =Tweet(n,row[0][2:],c, int(row[6]) ,int(row[7]),0,0 )
                 #tw._featureVector = index
                 index = tw._featureVector
                 self._tweets[index].append(tw)
                 x+=1
                 if (x>=2500):
+                    csvFile.close()
                     return
+            csvFile.close()
+            
+            for i in self._tweets:
+                print(len(i))
             return
             #return features
 

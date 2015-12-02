@@ -4,12 +4,11 @@
 
 import unittest
 import math
+import tweepy
 from Tweet import Tweet
 from Database import MockDatabase
 from BitIterator import BitOver
-import Tools
-import SpamWords
-import random
+#import Tools
 
 
 class Cipher:
@@ -24,9 +23,6 @@ class Cipher:
         preprocessedPlainText,revKey = self._preprocessPlainText(plainText, key)
         listOfTweets, listOfBitsPerTweet = self._selectTweetsListForEncoding(preprocessedPlainText,
                                                          tweetsDatabase)
-
-        # self._generateMessage(topicOfTweets, listOfTweets)
-        # print(self._generateMessage(topicOfTweets, listOfTweets))
 
         output = self._generateHeader(topicOfTweets)
         for tweet in listOfTweets:
@@ -43,38 +39,11 @@ class Cipher:
         #plainText = self._reversePlainTextPreprocessing(preprocessedPlainText, key)
         return plainText
 
-
     def _generateHeader(self, topicOfTweets):
         return """Dear customer,
             Click on this link to get a PROMO CODE and earn an Xbox One : http://virus.hack.ch.
             Here is what people say about this great article :
             """
-
-    def _generateMessage(self, topicOfTweets, listOfTweets):
-        tweetsText = ""
-        for tweet in listOfTweets:
-            tweetsText += "\n%s\n%s\n" % (tweet.getContent(), tweet.getUrl())
-
-        output = ""
-        output += "Dear customer,\n\n"
-        for item in random.sample(SpamWords.intro, 2):
-            output += item + " "
-        for item in random.sample(SpamWords.disclaimer, 1):
-            output += "\n" + item + " "
-        output += "\nClick on this link to get a PROMO CODE and get " \
-            + topicOfTweets
-        for item in random.sample(SpamWords.inciteAboutSender, 1):
-            output += "\n" + item + " " + " : http://COUPON.virus.hack.ch/PROMO-CODE\n"
-        for item in random.sample(SpamWords.conclusions, 2):
-            output += "\n" + item + " "
-        output += "\n"
-        for item in random.sample(SpamWords.incite, 3):
-            output += item + " "
-
-        output += "\n\nHere is what people say about it :\n"
-        output += tweetsText
-
-        return output
 
     def _preprocessPlainText(self, plainText, key):
         """Applies compression algorithm, encode with AES, ... and returns
@@ -82,26 +51,26 @@ class Cipher:
         __reversePlainTextPreprocessing(plainText, key)."""
         # examples about bytes and bytearray: http://www.dotnetperls.com/bytes
         # some crypto module that seems nice: https://pypi.python.org/pypi/pycrypto
-        cipherText,emd,c,aes,leng,root = Tools.preprocess(plainText,key,key,key,3,5,16)
-        out = bytearray(plainText,'UTF-8')
-        out = cipherText
-        #reverseEmd = emd
-        #reverseC = c
-        #reverseAES = aes
-        #reverseC_length = leng
-        #reverseRoot = root
-        return out,(emd,c,aes,leng,root)
-        #return bytearray(plainText, 'UTF-8')  # todo Juyasohn.
+        #cipherText,emd,c,aes,leng,root = Tools.preprocess(plainText,key,key,key,3,5,16)
+        #out = bytearray(plainText,'UTF-8')
+        #out = cipherText
+        ##reverseEmd = emd
+        ##reverseC = c
+        ##reverseAES = aes
+        ##reverseC_length = leng
+        ##reverseRoot = root
+        #return out,(emd,c,aes,leng,root)
+        return bytearray(plainText, 'UTF-8') ,(0,0,0,0,0)  # todo Juyasohn.
         # warning : take care of encoding issues (UTF-8, Latin1, ...)
         # return Tools.preprocess(plainText, key, key, key, 3, 5, 16)
 
     def _reversePlainTextPreprocessing(self, preprocessedPlainText, key):
         """Reverses the process of _preprocessPlainText(plainText, key) by
         returning a string from the given bytes preprocessedPlainText."""
-        emd,c,aes,leng,root = key
-        out = Tools.reverse_preprocess(preprocessedPlainText,emd,c,aes,leng,root)
-        return out
-        #return preprocessedPlainText.decode("UTF-8")  # todo Juyasohn
+        #emd,c,aes,leng,root = key
+        #out = Tools.reverse_preprocess(preprocessedPlainText,emd,c,aes,leng,root)
+        #return out
+        return preprocessedPlainText.decode("UTF-8")  # todo Juyasohn
         # warning : take care of encoding issues (UTF-8, Latin1, ...)
         # return
 
@@ -149,6 +118,13 @@ class Cipher:
         as well as a list of quantity of bits encoded in each tweet."""
         tweets = []
         bits = []
+        consumer_key = 'wsjOTj954n9aLO7KKrKVvX0ah'
+        consumer_secret = 'Dk4JzqEQDhfiKpUMmlOjDQvIXX4hpHBDaf2GwLmxZWWHPVklcg'
+        access_token = '3475513752-OcILSytFVDPoYOK0sXaaFQPxob5VqpCkeXPxLCw'
+        access_token_secret = 'y38aiyE0VD4Rr9D8ZL5l7sIAr1CyipoqsRkM1CRts3jO0'
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(access_token, access_token_secret)
+        api = tweepy.API(auth)
 
         lines = text.split('\n')
 
@@ -169,11 +145,13 @@ class Cipher:
             flag += 1
             if flag == 3:
                 flag = 0
-                tweets.append(Tweet(userId, tweetId, content))
-                bits.append(5)
-        # print ("number of Tweets")
-        # print (len(tweets))
-        # print()
+                tweets.append(Tweet(userId, tweetId, content,0,0,1,api))
+                bits.append(6)
+        print ("number of Tweets")
+        print (len(tweets))
+        print()
+        for t in tweets:
+            print(t._featureVector)
         return (tweets, bits)  # todo Stuart
 
     def _recoverDataFromTweetsList(self, listOfTweets, listOfBitsPerTweet):
@@ -251,4 +229,3 @@ class TestCipher(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
